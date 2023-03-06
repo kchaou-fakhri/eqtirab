@@ -29,6 +29,7 @@
     <color name="purple_100">#fff5ff</color>
 
     <color name="halfTransparentBackground">#aacccccc</color>
+    <color name="primary_color">#496154</color>
 
 
 </resources>
