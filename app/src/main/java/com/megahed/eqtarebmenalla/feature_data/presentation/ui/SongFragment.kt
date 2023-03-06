@@ -52,6 +52,7 @@ class SongFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
         binding = FragmentSongBinding.inflate(inflater, container, false)
 
         subscribeToObservers()
@@ -102,7 +103,7 @@ class SongFragment : Fragment() {
     private fun updateTitleAndSongImage(song: Song) {
         val title = "${song.title} - ${song.subtitle}"
         binding.tvSongName.text = title
-        glide.load(song.imageUrl).into(binding.ivSongImage)
+       // glide.load(song.imageUrl).into(binding.ivSongImage)
     }
 
     private fun subscribeToObservers() {
@@ -111,7 +112,7 @@ class SongFragment : Fragment() {
                         result.data?.let { songs ->
                             if(curPlayingSong == null && songs.isNotEmpty()) {
                                 curPlayingSong = songs[0]
-                                updateTitleAndSongImage(songs[0])
+                              //  updateTitleAndSongImage(songs[0])
                             }
                         }
 
