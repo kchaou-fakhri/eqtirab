@@ -3,15 +3,13 @@ package com.megahed.eqtarebmenalla.feature_data.data.repository
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.megahed.eqtarebmenalla.db.model.Hefz
 import com.megahed.eqtarebmenalla.feature_data.data.remote.hez.RetrofitHelper
 import com.megahed.eqtarebmenalla.feature_data.data.remote.hez.entity.ResultHefz
 
-import com.megahed.eqtarebmenalla.feature_data.data.remote.hez.entity.Reway
+import com.megahed.eqtarebmenalla.feature_data.data.remote.hez.entity.SuraMp3
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
 
 class HefzRepository {
 
@@ -36,4 +34,26 @@ class HefzRepository {
 
            return mutableLiveData
        }
+
+
+    fun getSuraMp3(suraId: Int, qar2e: String): LiveData<SuraMp3>{
+        val mutableLiveData = MutableLiveData<SuraMp3>()
+
+        RetrofitHelper.api.getSuraMp3(suraId, qar2e).clone().enqueue(object :
+            Callback<SuraMp3>{
+            override fun onResponse(
+                call: Call<SuraMp3>,
+                response: Response<SuraMp3>
+            ) {
+                mutableLiveData.value = response.body()
+            }
+
+            override fun onFailure(call: Call<SuraMp3>, t: Throwable) {
+                Log.println(Log.ASSERT, "Failed : ", t.message.toString())
+            }
+
+        })
+
+        return mutableLiveData
+    }
 }

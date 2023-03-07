@@ -198,8 +198,10 @@
         app:helperTextEnabled="true">
 
       <com.google.android.material.textfield.TextInputEditText
+          android:id="@+id/nb_aya_repeat"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
+          android:text="1"
           android:inputType="number" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -242,7 +244,10 @@
 
       <com.google.android.material.textfield.TextInputEditText
           android:layout_width="match_parent"
+          android:id="@+id/sura_repeat"
           android:layout_height="wrap_content"
+          android:text="1"
+
           android:inputType="number" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -252,13 +257,19 @@
       android:layout_width="match_parent"
       android:layout_height="match_parent">
 
-
-    <Button
-
+    <com.arges.sepan.argmusicplayer.PlayerViews.ArgPlayerSmallView
+        android:id="@+id/argmusicplayer"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_40sdp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/start"
+        app:layout_constraintTop_toTopOf="parent" />
+    <Button
+        android:id="@+id/start"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_35sdp"
         android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
+        android:enabled="false"
         android:layout_marginBottom="32dp"
         app:backgroundTint="#E9496154"
         android:text="البدأ"
@@ -267,7 +278,9 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
   </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 
 </LinearLayout>
