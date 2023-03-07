@@ -10,21 +10,19 @@ import android.widget.AdapterView.OnItemClickListener
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import com.arges.sepan.argmusicplayer.Models.ArgAudio
-import com.arges.sepan.argmusicplayer.Models.ArgAudioList
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.megahed.eqtarebmenalla.common.Constants
 import com.megahed.eqtarebmenalla.databinding.FragmentListenerHelperBinding
 import com.megahed.eqtarebmenalla.feature_data.data.remote.hez.entity.Reway
 import com.megahed.eqtarebmenalla.feature_data.presentation.viewoModels.HefzVM
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class ListenerHelperFragment : Fragment() {
 
     private lateinit var binding: FragmentListenerHelperBinding
     private lateinit var hefzVM: HefzVM
-    lateinit var mediaPlayer: MediaPlayer
 
 
     override fun onCreateView(
@@ -34,8 +32,6 @@ class ListenerHelperFragment : Fragment() {
     ): View {
         binding = FragmentListenerHelperBinding.inflate(inflater, container, false)
         val root: View = binding.root
-        mediaPlayer = MediaPlayer()
-        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
 
         hefzVM  = HefzVM()
         var arrSura = arrayListOf<String>()

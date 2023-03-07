@@ -257,12 +257,6 @@
       android:layout_width="match_parent"
       android:layout_height="match_parent">
 
-    <com.arges.sepan.argmusicplayer.PlayerViews.ArgPlayerSmallView
-        android:id="@+id/argmusicplayer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/start"
-        app:layout_constraintTop_toTopOf="parent" />
     <Button
         android:id="@+id/start"
         android:layout_width="match_parent"
