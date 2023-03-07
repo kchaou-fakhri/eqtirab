@@ -12,12 +12,12 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.arges.sepan.argmusicplayer.Models.ArgAudio
 import com.arges.sepan.argmusicplayer.Models.ArgAudioList
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.MediaItem
 import com.megahed.eqtarebmenalla.common.Constants
 import com.megahed.eqtarebmenalla.databinding.FragmentListenerHelperBinding
 import com.megahed.eqtarebmenalla.feature_data.data.remote.hez.entity.Reway
 import com.megahed.eqtarebmenalla.feature_data.presentation.viewoModels.HefzVM
-import dagger.hilt.android.AndroidEntryPoint
-
 
 
 class ListenerHelperFragment : Fragment() {
@@ -34,10 +34,10 @@ class ListenerHelperFragment : Fragment() {
     ): View {
         binding = FragmentListenerHelperBinding.inflate(inflater, container, false)
         val root: View = binding.root
-            mediaPlayer = MediaPlayer()
+        mediaPlayer = MediaPlayer()
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
 
-          hefzVM  = HefzVM()
+        hefzVM  = HefzVM()
         var arrSura = arrayListOf<String>()
         var arrEya = arrayListOf<Int>()
         var arrEyaEnd = arrayListOf<Int>()
@@ -61,17 +61,17 @@ class ListenerHelperFragment : Fragment() {
         hefzVM.getAllRewat().observe(viewLifecycleOwner, Observer {
 
             tempRewat.addAll(it.data)
-                var arrRewat = arrayListOf<String>()
-                 it.data.forEach{
-                     if (it.language.equals("ar")){
-                         arrRewat.add(it.name)
+            var arrRewat = arrayListOf<String>()
+            it.data.forEach{
+                if (it.language.equals("ar")){
+                    arrRewat.add(it.name)
 
-                     }
                 }
-                val adapter = ArrayAdapter(requireContext(),
-                    android.R.layout.simple_list_item_1, arrRewat)
+            }
+            val adapter = ArrayAdapter(requireContext(),
+                android.R.layout.simple_list_item_1, arrRewat)
 
-                binding.listOfRewat.setAdapter(adapter)
+            binding.listOfRewat.setAdapter(adapter)
             binding.listOfRewat.setOnItemClickListener(
                 OnItemClickListener { adapterView, view, position, id ->
                     for (list in arrRewat) {
@@ -88,9 +88,9 @@ class ListenerHelperFragment : Fragment() {
 
 
         // get list  of suar and convert to list of string
-            Constants.SORA_OF_QURAN_WITH_NB_EYA.forEach {
-                arrSura.add(it.key)
-            }
+        Constants.SORA_OF_QURAN_WITH_NB_EYA.forEach {
+            arrSura.add(it.key)
+        }
 
         // display list of suar
 
@@ -153,68 +153,33 @@ class ListenerHelperFragment : Fragment() {
 
         binding.start.setOnClickListener {
             var rewayIdSelected = ""
-           tempRewat.forEach {
-               if (it.name.equals(binding.listOfRewat.text.toString())){
-                   rewayIdSelected = it.identifier
-
-               }
-           }
-
-
-            hefzVM.getSuraMp3(tempSuraId ,rewayIdSelected).observe(viewLifecycleOwner, Observer {
-                val playlist = ArgAudioList(true)
-                var audio : ArgAudio
-
-                    for(i in binding.nbAya.text.toString().toInt() ..binding.nbEyaEnd.text.toString().toInt()){
-                        for (j in 0..binding.nbAyaRepeat.text.toString().toInt()){
-                            audio = ArgAudio.createFromURL(it.data.ayahs.get(i).text,
-                                it.data.ayahs.get(i).number.toString(),  it.data.ayahs.get(i).audio)
-                            playlist.add(audio)
-                        }
-
-
-
-
-
-
-
-
+            tempRewat.forEach {
+                if (it.name.equals(binding.listOfRewat.text.toString())){
+                    rewayIdSelected = it.identifier
 
                 }
-
-                binding.argmusicplayer.playPlaylist(playlist );
-
-            //                for (i in 0..binding.suraRepeat.text.toString().toInt()){
-//
-//                    it.data.ayahs.forEach {
-//                       for (j in binding.nbAya.text.toString().toInt()
-////                           .. binding.nbEyaEnd.text.toString().toInt()){
-//                           try {
-//                               // on below line we are setting audio
-//                               // source as audio url on below line.
-//                               mediaPlayer.setDataSource(it.audio)
-//
-//                               // on below line we are
-//                               // preparing our media player.
-//                               mediaPlayer.prepare()
-//
-//                               // on below line we are
-//                               // starting our media player.
-//                               mediaPlayer.start()
-//
-//                           } catch (e: Exception) {
-//
-//                               // on below line we are handling our exception.
-//                               e.printStackTrace()
-//                           }
-//                           // on below line we are displaying a toast message as audio player.
-//                           Toast.makeText(requireContext(), "Audio started playing..", Toast.LENGTH_SHORT).show()
+            }
+            val player = ExoPlayer.Builder(requireContext()).build()
 
 
-//                       }
-//                    }
-//                }
-           })
+            // Build the media items.
+            var audioItem: MediaItem
+
+            hefzVM.getSuraMp3(tempSuraId ,rewayIdSelected).observe(viewLifecycleOwner, Observer {
+
+                for(i in binding.nbAya.text.toString().toInt()-1 ..binding.nbEyaEnd.text.toString().toInt()-1){
+                    for (j in 0 until binding.nbAyaRepeat.text.toString().toInt()){
+//
+                        audioItem = MediaItem.fromUri(it.data.ayahs.get(i).audioSecondary.get(0))
+
+                        player.addMediaItem(audioItem)
+                    }
+                }
+                player.prepare();
+                player.play();
+
+
+            })
         }
 
 
