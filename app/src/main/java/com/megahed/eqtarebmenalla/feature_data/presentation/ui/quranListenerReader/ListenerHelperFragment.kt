@@ -23,6 +23,9 @@ import com.megahed.eqtarebmenalla.feature_data.presentation.viewoModels.HefzVM
 class ListenerHelperFragment : Fragment() {
 
     private lateinit var binding: FragmentListenerHelperBinding
+    private lateinit var hefzVM: HefzVM
+    lateinit var mediaPlayer: MediaPlayer
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
