@@ -110,5 +110,9 @@ dependencies {
     api "com.google.android.exoplayer:extension-mediasession:2.18.2"
 
 
+    implementation 'com.github.mergehez:ArgPlayer:v3.1'
+
+
+
 
 }
