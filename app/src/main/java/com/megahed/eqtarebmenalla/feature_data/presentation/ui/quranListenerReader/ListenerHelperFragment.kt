@@ -2,6 +2,7 @@ package com.megahed.eqtarebmenalla.feature_data.presentation.ui.quranListenerRea
 
 import android.app.Dialog
 import android.graphics.Color
+import android.opengl.Visibility
 import android.os.Bundle
 import android.view.*
 import android.widget.AdapterView.OnItemClickListener
@@ -153,6 +154,14 @@ class ListenerHelperFragment : Fragment() {
             })
 
 
+        binding.stop.setOnClickListener {
+            binding.start.visibility = View.VISIBLE
+            binding.stop.visibility = View.GONE
+
+            player.stop()
+        }
+
+
 
 
         binding.start.setOnClickListener {
@@ -174,7 +183,6 @@ class ListenerHelperFragment : Fragment() {
                 window.attributes = wlp
                 val alert : ConstraintLayout = this.dialogBox.findViewById(R.id.alert_constraint)
                 alert.setBackgroundColor(Color.parseColor("#ffffff"))
-
                 val btnStop: TextView = this.dialogBox.findViewById(R.id.stop)
 
                  ayetAdapter = AyetAdapter(this.requireContext(), arrEytMP3)
@@ -184,6 +192,8 @@ class ListenerHelperFragment : Fragment() {
 
 
                 dialogBox.show()
+                binding.start.visibility = View.GONE
+                binding.stop.visibility = View.VISIBLE
                 btnStop.setOnClickListener {
                     dialogBox.dismiss()
                     player.stop()
@@ -232,7 +242,7 @@ for (r in 0..suraRepeat){
 }
 
         for(i in nbAya .. abAyaEnd){
-            arrEytMP3.add(Eya(sura.get(i).text, sura.get(i).number))
+            arrEytMP3.add(Eya(sura.get(i).text, sura.get(i).numberInSurah))
 
         }
 
@@ -242,5 +252,9 @@ for (r in 0..suraRepeat){
 
 
     }
+
+
+
+
 
 }
