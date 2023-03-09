@@ -2,15 +2,14 @@ package com.megahed.eqtarebmenalla.feature_data.presentation.ui.home
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.*
+import android.content.Context.ALARM_SERVICE
 import android.content.Intent
 import android.graphics.Color
 import android.location.Geocoder
 import android.location.Location
 import android.location.LocationManager
-import android.os.Bundle
-import android.os.CountDownTimer
-import android.os.Handler
-import android.os.Looper
+import android.os.*
 import android.provider.Settings
 import android.text.Spannable
 import android.text.SpannableString
@@ -19,7 +18,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -49,6 +47,12 @@ class HomeFragment : Fragment(), LocationListener {
     private lateinit var locationRequest: LocationRequest
     private lateinit var mLocationCallback: LocationCallback
 
+    lateinit var notificationManager : NotificationManager
+    lateinit var notificationChannel : NotificationChannel
+    lateinit var builder : Notification.Builder
+    private val channelId = "com.megahed.eqtarebmenalla"
+    private val description = "Test notification"
+
 
     private val mainViewModel : IslamicViewModel by activityViewModels()
 
@@ -66,6 +70,7 @@ class HomeFragment : Fragment(), LocationListener {
 
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
+
 
        binding.dayDetails.text= DateFormat.getDateInstance(DateFormat.FULL).format(Date())
 
@@ -349,7 +354,54 @@ class HomeFragment : Fragment(), LocationListener {
                 textView.justificationMode=Layout.JUSTIFICATION_MODE_NONE
             }
         }*/
+
+
+
+
+        // adhen alarm create by fkchaou 08/03/2023
+        createNotificationChannel()
+        binding.cbFajr.setOnCheckedChangeListener { compoundButton, b ->
+            if(binding.cbFajr.isChecked){
+
+
+
+                var intent = Intent(requireContext(), ReminderBrodcast::class.java)
+                var pendingIntent = PendingIntent.getBroadcast(requireContext(), 0, intent, 0)
+                var alarmManager = requireActivity().getSystemService(ALARM_SERVICE) as AlarmManager
+
+                var time = System.currentTimeMillis()
+                var timeD = 1000*10
+                val cal: Calendar = Calendar.getInstance()
+                cal[Calendar.HOUR_OF_DAY] = 13
+                cal[Calendar.MINUTE] = 47
+                cal[Calendar.SECOND] = 20
+                cal[Calendar.MILLISECOND] = 0
+
+
+                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, cal.timeInMillis, AlarmManager.INTERVAL_DAY ,pendingIntent )
+            }
+        }
+
+
+
         return root
+    }
+
+    private fun createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = "test"
+            val descriptionText = "just foooo"
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel("com.megahed.eqtarebmenalla", name, importance).apply {
+                description = descriptionText
+            }
+            // Register the channel with the system
+            val notificationManager: NotificationManager =
+                requireActivity().getSystemService(NotificationManager::class.java)
+            notificationManager.createNotificationChannel(channel)
+        }
     }
 
     fun getSpannable(text: String): Spannable? {
@@ -560,6 +612,7 @@ class HomeFragment : Fragment(), LocationListener {
         }
         //return country?.lowercase()
     }
+
 
 
 

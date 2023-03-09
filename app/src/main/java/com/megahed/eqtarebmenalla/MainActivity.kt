@@ -46,7 +46,6 @@ class MainActivity : AppCompatActivity(){
 
 
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         super.onCreate(savedInstanceState)
@@ -56,7 +55,6 @@ class MainActivity : AppCompatActivity(){
 
        /* val mainViewModel = ViewModelProvider(this).get(IslamicViewModel::class.java)*/
         val prayerTimeViewModel = ViewModelProvider(this).get(PrayerTimeViewModel::class.java)
-
 
 
 
