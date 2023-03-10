@@ -113,15 +113,35 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
 
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <TextView
+    android:id="@+id/update"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:layout_marginLeft="10dp"
+    android:text="تحديث"
+    android:textColor="@color/primary_color"
+    android:background="@drawable/type_soura_background"
+    android:textSize="@dimen/_12ssp"
+        app:layout_constraintEnd_toEndOf="parent"
+    />
+    <TextView
+        android:id="@+id/dayDetails"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/_3sdp"
+        android:text="@string/loading"
+        android:textSize="@dimen/_12ssp"
+        app:layout_constraintStart_toStartOf="parent"
+        />
 
-                        <TextView
-                            android:id="@+id/dayDetails"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="@dimen/_3sdp"
-                            android:text="@string/loading"
-                            android:layout_gravity="center"
-                            android:textSize="@dimen/_12ssp" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
 
 
 
