@@ -3,12 +3,15 @@ package com.megahed.eqtarebmenalla.feature_data.presentation.ui.home
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.*
+import android.content.Context
 import android.content.Context.ALARM_SERVICE
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.Geocoder
 import android.location.Location
 import android.location.LocationManager
+import android.media.MediaPlayer
 import android.os.*
 import android.provider.Settings
 import android.text.Spannable
@@ -21,6 +24,10 @@ import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
@@ -31,16 +38,23 @@ import com.megahed.eqtarebmenalla.R
 import com.megahed.eqtarebmenalla.common.CommonUtils
 import com.megahed.eqtarebmenalla.databinding.FragmentHomeBinding
 import com.megahed.eqtarebmenalla.db.model.PrayerTime
+import com.megahed.eqtarebmenalla.feature_data.data.remote.adhen.MyBroadcastReceiver
 import com.megahed.eqtarebmenalla.feature_data.presentation.viewoModels.IslamicViewModel
 import com.megahed.eqtarebmenalla.feature_data.presentation.viewoModels.PrayerTimeViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import de.coldtea.smplr.smplralarm.alarmNotification
+import de.coldtea.smplr.smplralarm.apis.SmplrAlarmAPI
+import de.coldtea.smplr.smplralarm.channel
+import de.coldtea.smplr.smplralarm.smplrAlarmSet
 import java.io.IOException
 import java.text.DateFormat
 import java.util.*
 import java.util.regex.Pattern
 
+
 @AndroidEntryPoint
 class HomeFragment : Fragment(), LocationListener {
+
 
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
     private var lastLocation: Location?=null
@@ -358,27 +372,119 @@ class HomeFragment : Fragment(), LocationListener {
 
 
 
+
         // adhen alarm create by fkchaou 08/03/2023
         createNotificationChannel()
         binding.cbFajr.setOnCheckedChangeListener { compoundButton, b ->
             if(binding.cbFajr.isChecked){
 
-
-
-                var intent = Intent(requireContext(), ReminderBrodcast::class.java)
-                var pendingIntent = PendingIntent.getBroadcast(requireContext(), 0, intent, 0)
-                var alarmManager = requireActivity().getSystemService(ALARM_SERVICE) as AlarmManager
-
-                var time = System.currentTimeMillis()
-                var timeD = 1000*10
                 val cal: Calendar = Calendar.getInstance()
-                cal[Calendar.HOUR_OF_DAY] = 13
-                cal[Calendar.MINUTE] = 47
-                cal[Calendar.SECOND] = 20
+
+                cal[Calendar.HOUR_OF_DAY] = 18 //binding.fajrTime.text.toString().substring(0,2).toInt()
+                cal[Calendar.MINUTE]      =  6  //binding.fajrTime.text.toString().substring(3,5).toInt()
+                cal[Calendar.SECOND]      = 0
                 cal[Calendar.MILLISECOND] = 0
 
 
-                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, cal.timeInMillis, AlarmManager.INTERVAL_DAY ,pendingIntent )
+                var time = System.currentTimeMillis() + 10000L
+
+                var intent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java)
+                var pendingIntent : PendingIntent= PendingIntent.getBroadcast(requireContext().applicationContext,
+                                                                            110, intent,PendingIntent.FLAG_IMMUTABLE)
+                var am : AlarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                am.set(AlarmManager.RTC_WAKEUP, cal.timeInMillis ,  pendingIntent)
+//
+
+                val dismissIntent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java).apply {
+
+                }
+
+
+                smplrAlarmSet(requireContext().applicationContext) {
+                    hour { 18 }
+                    min { 6}
+
+                    isActive { true }
+
+
+                    val snoozeIntent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java).apply {
+                        action = "ACTION_SNOOZE"
+                        putExtra("HOUR", 18)
+                        putExtra("MINUTE", 6)
+
+                    }
+
+                    notification {
+                        alarmNotification {
+                            smallIcon { R.drawable.prayer_icon }
+                            title { "اذان الفجر" }
+                            message { "حان وقت صلاة الفجر" }
+                            autoCancel { true }
+                            firstButtonText { "Snooze" }
+                            secondButtonText { "Dismiss" }
+
+
+                        }
+                    }
+                    notificationChannel {
+                        channel {
+                            importance { NotificationManager.IMPORTANCE_HIGH }
+                            showBadge { true }
+                            name { "de.coldtea.smplr.alarm.channel" }
+                            description { "This notification channel is created by SmplrAlarm" }
+                        }
+                    }
+
+                }
+
+
+
+
+
+
+
+//                var intent = Intent(requireContext(), ReminderBrodcast::class.java)
+//                var pendingIntent = PendingIntent.getBroadcast(requireContext(), 0, intent, 0)
+//                var alarmManager = requireActivity().getSystemService(ALARM_SERVICE) as AlarmManager
+
+
+//                val timer = Timer()
+//                val timerTask = object : TimerTask() {
+//                    override fun run() {
+//                        Log.e("NIlu_TAG","Hello World")
+//
+//                    }
+//                }
+//                timer.schedule(timerTask, 0, 1000)
+//
+//                val serviceIntent = Intent(requireContext(), SendDataService::class.java)
+//                requireContext().startService(serviceIntent)
+
+
+
+//                cal[Calendar.HOUR_OF_DAY] = farjrtime.substring(0,1).toInt()
+//                cal[Calendar.MINUTE]      =    farjrtime.substring(2,3).toInt()
+//                cal[Calendar.SECOND]      = 0
+//                cal[Calendar.MILLISECOND] = 0
+
+//                var time = 10L
+//                var timeD = 10L
+
+//                val timerTask = object : TimerTask() {
+//                    override fun run() {
+
+//                         time = System.currentTimeMillis()
+//                         timeD = (1000*5).toLong()
+//                        alarmManager.set(AlarmManager.RTC_WAKEUP, timeD ,pendingIntent )
+
+//                    }
+//                }
+//                timer.schedule(timerTask, 0, 6000)
+
+
+
+
+                //  alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, cal.timeInMillis, AlarmManager.INTERVAL_DAY ,pendingIntent )
             }
         }
 
@@ -612,6 +718,8 @@ class HomeFragment : Fragment(), LocationListener {
         }
         //return country?.lowercase()
     }
+
+
 
 
 
