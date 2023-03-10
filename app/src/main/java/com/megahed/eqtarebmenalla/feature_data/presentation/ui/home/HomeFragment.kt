@@ -22,6 +22,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -883,6 +884,18 @@ class HomeFragment : Fragment(), LocationListener {
                 cal[Calendar.SECOND]      = 40
                 cal[Calendar.MILLISECOND] = 0
 
+
+
+
+
+                var intent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java)
+                var pendingIntent : PendingIntent= PendingIntent.getBroadcast(requireContext().applicationContext,
+                    110, intent,PendingIntent.FLAG_IMMUTABLE)
+                var am : AlarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                am.setRepeating(AlarmManager.RTC_WAKEUP, cal.timeInMillis ,AlarmManager.INTERVAL_DAY,  pendingIntent)
+
+
+
                 smplrAlarmUpdate(requireContext().applicationContext) {
                     requestCode { 111 }
                     hour { houre }
@@ -904,13 +917,26 @@ class HomeFragment : Fragment(), LocationListener {
             if (sharedPreference.getString("dhuhr","") == "true"){
 
 
+                editor.putString("dhuhr","true")
+                editor.commit()
                 var houre = binding.dhuhrTime.text.toString().substring(0,2).toInt()
                 var minute = binding.dhuhrTime.text.toString().substring(3,5).toInt()
                 val cal: Calendar = Calendar.getInstance()
                 cal[Calendar.HOUR_OF_DAY] = houre
                 cal[Calendar.MINUTE]      = minute
-                cal[Calendar.SECOND]      = 40
+                cal[Calendar.SECOND]      = 0
                 cal[Calendar.MILLISECOND] = 0
+
+
+
+
+
+                var intent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java)
+                var pendingIntent : PendingIntent= PendingIntent.getBroadcast(requireContext().applicationContext,
+                    120, intent,PendingIntent.FLAG_IMMUTABLE)
+                var am : AlarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                am.setRepeating(AlarmManager.RTC_WAKEUP, cal.timeInMillis ,AlarmManager.INTERVAL_DAY,  pendingIntent)
+
 
                 smplrAlarmUpdate(requireContext().applicationContext) {
                     requestCode { 121 }
@@ -931,13 +957,26 @@ class HomeFragment : Fragment(), LocationListener {
 
 
             if (sharedPreference.getString("asr","") == "true"){
+
+
                 var houre = binding.asrTime.text.toString().substring(0,2).toInt() +12
                 var minute = binding.asrTime.text.toString().substring(3,5).toInt()
                 val cal: Calendar = Calendar.getInstance()
                 cal[Calendar.HOUR_OF_DAY] = houre
                 cal[Calendar.MINUTE]      = minute
-                cal[Calendar.SECOND]      = 40
+                cal[Calendar.SECOND]      = 0
                 cal[Calendar.MILLISECOND] = 0
+
+
+
+
+
+                var intent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java)
+                var pendingIntent : PendingIntent= PendingIntent.getBroadcast(requireContext().applicationContext,
+                    130, intent,PendingIntent.FLAG_IMMUTABLE)
+                var am : AlarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                am.setRepeating(AlarmManager.RTC_WAKEUP, cal.timeInMillis ,AlarmManager.INTERVAL_DAY,  pendingIntent)
+
 
                 smplrAlarmUpdate(requireContext().applicationContext) {
                     requestCode { 131 }
@@ -963,8 +1002,18 @@ class HomeFragment : Fragment(), LocationListener {
                 val cal: Calendar = Calendar.getInstance()
                 cal[Calendar.HOUR_OF_DAY] = houre
                 cal[Calendar.MINUTE]      = minute
-                cal[Calendar.SECOND]      = 40
+                cal[Calendar.SECOND]      = 0
                 cal[Calendar.MILLISECOND] = 0
+
+
+
+
+
+                var intent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java)
+                var pendingIntent : PendingIntent= PendingIntent.getBroadcast(requireContext().applicationContext,
+                    140, intent,PendingIntent.FLAG_IMMUTABLE)
+                var am : AlarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                am.setRepeating(AlarmManager.RTC_WAKEUP, cal.timeInMillis ,AlarmManager.INTERVAL_DAY,  pendingIntent)
 
                 smplrAlarmUpdate(requireContext().applicationContext) {
                     requestCode { 141 }
@@ -984,8 +1033,43 @@ class HomeFragment : Fragment(), LocationListener {
             }
 
             if (sharedPreference.getString("isha","") == "true"){
-                binding.cbIsha.isChecked = true
+                var houre = binding.ishaTime.text.toString().substring(0,2).toInt() +12
+                var minute = binding.ishaTime.text.toString().substring(3,5).toInt()
+                val cal: Calendar = Calendar.getInstance()
+                cal[Calendar.HOUR_OF_DAY] = houre
+                cal[Calendar.MINUTE]      = minute
+                cal[Calendar.SECOND]      = 0
+                cal[Calendar.MILLISECOND] = 0
+
+
+
+
+
+                var intent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java)
+                var pendingIntent : PendingIntent= PendingIntent.getBroadcast(requireContext().applicationContext,
+                    150, intent,PendingIntent.FLAG_IMMUTABLE)
+                var am : AlarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                am.setRepeating(AlarmManager.RTC_WAKEUP, cal.timeInMillis ,AlarmManager.INTERVAL_DAY,  pendingIntent)
+
+
+                smplrAlarmUpdate(requireContext().applicationContext) {
+                    requestCode { 151 }
+                    hour { houre }
+                    min { minute }
+                    weekdays {
+                        monday()
+                        friday()
+                        sunday()
+                        thursday()
+                        saturday()
+                        wednesday()
+                        tuesday()
+                    }
+                    isActive { true }
+                }
             }
+
+            Toast.makeText(requireContext(), "تم تحديث أوقات الصلاة", Toast.LENGTH_LONG).show()
         }
 
         return root
