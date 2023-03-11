@@ -1,23 +1,27 @@
 package com.megahed.eqtarebmenalla.feature_data.data.remote.adhen
 
-import android.app.AlarmManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.media.MediaPlayer
-import android.provider.MediaStore.Audio.Media
+import android.util.Log
 import com.megahed.eqtarebmenalla.R
-import com.megahed.eqtarebmenalla.feature_data.presentation.ui.home.AdhenAlarmActivity
+
 
 class MyBroadcastReceiver : BroadcastReceiver() {
+    var mp: MediaPlayer? = null // Here
 
+    private val TAG = "VPET"
     override fun onReceive(p0: Context?, p1: Intent?) {
 
-        val mp = MediaPlayer.create(p0, R.raw.azan3)
-        mp.start()
+
+            val mp = MediaPlayer.create(p0 , R.raw.azan1)
+            mp.start()
+
+
+
+
 //
-
-
 //            var i = Intent(p0, AdhenAlarmActivity::class.java)
 //        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 //
