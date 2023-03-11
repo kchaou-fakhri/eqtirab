@@ -4,15 +4,12 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.*
 import android.content.Context
-import android.content.Context.ALARM_SERVICE
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.Geocoder
 import android.location.Location
 import android.location.LocationManager
-import android.media.MediaPlayer
 import android.os.*
 import android.provider.Settings
 import android.text.Spannable
@@ -26,15 +23,13 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.*
+import com.megahed.eqtarebmenalla.MainActivity
 import com.megahed.eqtarebmenalla.MethodHelper
 import com.megahed.eqtarebmenalla.R
 import com.megahed.eqtarebmenalla.common.CommonUtils
@@ -45,7 +40,6 @@ import com.megahed.eqtarebmenalla.feature_data.presentation.viewoModels.IslamicV
 import com.megahed.eqtarebmenalla.feature_data.presentation.viewoModels.PrayerTimeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import de.coldtea.smplr.smplralarm.*
-import de.coldtea.smplr.smplralarm.apis.SmplrAlarmAPI
 import java.io.IOException
 import java.text.DateFormat
 import java.util.*
@@ -404,18 +398,19 @@ class HomeFragment : Fragment(), LocationListener {
 
 
         // adhen alarm create by fkchaou 08/03/2023
-        createNotificationChannel()
+
         binding.cbFajr.setOnCheckedChangeListener { compoundButton, b ->
             if(binding.cbFajr.isChecked){
+
 
                 editor.putString("fajr","true")
                 editor.commit()
 
-                var houre = binding.fajrTime.text.toString().substring(0,2).toInt()
-                var minute = binding.fajrTime.text.toString().substring(3,5).toInt()
+                var houre =  binding.fajrTime.text.toString().substring(0,2).toInt()
+                var minute =binding.fajrTime.text.toString().substring(3,5).toInt()
                 val cal: Calendar = Calendar.getInstance()
-                cal[Calendar.HOUR_OF_DAY] = houre
-                cal[Calendar.MINUTE]      = minute
+                cal[Calendar.HOUR_OF_DAY] =  houre
+                cal[Calendar.MINUTE]      =  minute
 
                 cal[Calendar.SECOND]      = 0
                 cal[Calendar.MILLISECOND] = 0
@@ -425,10 +420,12 @@ class HomeFragment : Fragment(), LocationListener {
 
 
                 var intent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java)
+                intent.addCategory("android.intent.category.DEFAULT")
                 var pendingIntent : PendingIntent= PendingIntent.getBroadcast(requireContext().applicationContext,
                                                                             110, intent, PendingIntent.FLAG_IMMUTABLE)
                 var am : AlarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
                 am.setRepeating(AlarmManager.RTC_WAKEUP, cal.timeInMillis , AlarmManager.INTERVAL_DAY,  pendingIntent)
+//
 
 
 
@@ -438,6 +435,7 @@ class HomeFragment : Fragment(), LocationListener {
                     min { minute}
                    requestCode { 111 }
                     isActive { true }
+
 
                     weekdays {
                         monday()
@@ -449,13 +447,14 @@ class HomeFragment : Fragment(), LocationListener {
                         tuesday()
                     }
 
-                    val snoozeIntent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java).apply {
+                    val snoozeIntent = Intent(requireContext().applicationContext, MainActivity::class.java).apply {
                         action = "ACTION_SNOOZE"
                         putExtra("HOUR", houre)
                         putExtra("MINUTE", minute)
                     }
 
-                    val dismissIntent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java).apply {
+
+                    val dismissIntent = Intent(requireContext().applicationContext, MainActivity::class.java).apply {
                         action = "ACTION_DISMISS"
                     }
 
@@ -464,10 +463,10 @@ class HomeFragment : Fragment(), LocationListener {
                     notification {
                         alarmNotification {
                             smallIcon { R.drawable.prayer_icon }
-                           // title { "اذان الفجر" }
-                            title { "doplep" }
-                          //  message { " قال الله تعالى: فَأَقِيمُوا الصَّلَاةَ إِنَّ الصَّلَاةَ كَانَتْ عَلَى الْمُؤْمِنِينَ كِتَابًا مَوْقُوتًا {النساء:103}." }
-                          message { "dddddddddddd" }
+                            title { "اذان الفجر" }
+
+                            message { " قال الله تعالى: فَأَقِيمُوا الصَّلَاةَ إِنَّ الصَّلَاةَ كَانَتْ عَلَى الْمُؤْمِنِينَ كِتَابًا مَوْقُوتًا {النساء:103}." }
+
                             autoCancel { true }
                             firstButtonText { "Snooze" }
                             secondButtonText { "Dismiss" }
@@ -479,8 +478,8 @@ class HomeFragment : Fragment(), LocationListener {
                     }
                     notificationChannel {
                         channel {
-                            importance { NotificationManager.IMPORTANCE_HIGH }
-                            showBadge { false }
+                            importance { NotificationManager.IMPORTANCE_DEFAULT }
+                            showBadge { true }
                             name { "de.coldtea.smplr.alarm.channel" }
                             description { "This notification channel is created by SmplrAlarm" }
                         }
@@ -1089,20 +1088,9 @@ class HomeFragment : Fragment(), LocationListener {
     }
 
     private fun createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "test"
-            val descriptionText = "just foooo"
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel("com.megahed.eqtarebmenalla", name, importance).apply {
-                description = descriptionText
-            }
-            // Register the channel with the system
-            val notificationManager: NotificationManager =
-                requireActivity().getSystemService(NotificationManager::class.java)
-            notificationManager.createNotificationChannel(channel)
-        }
+
+
+
     }
 
 

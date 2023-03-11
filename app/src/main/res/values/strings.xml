@@ -70,6 +70,7 @@
     <string name="openSettings">فتح الموقع</string>
     <string name="openLocation">خدمات الموقع غير مفعله الرجاء تفعيلها</string>
     <string name="cancel">إلغاء</string>
+    <string name="qibla">qibla</string>
 
 
     <string-array name="tasbeh">

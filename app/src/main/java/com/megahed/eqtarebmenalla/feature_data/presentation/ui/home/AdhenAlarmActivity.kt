@@ -20,11 +20,11 @@ class AdhenAlarmActivity : AppCompatActivity() {
 
 
 
-//        val mp = MediaPlayer.create(applicationContext, R.raw.azan1)
-//        mp.start()
-//
-//        binding.stop.setOnClickListener {
-//            mp.stop()
-//        }
+        val mp = MediaPlayer.create(applicationContext, R.raw.azan1)
+        mp.start()
+
+        binding.stop.setOnClickListener {
+            mp.stop()
+        }
     }
 }
