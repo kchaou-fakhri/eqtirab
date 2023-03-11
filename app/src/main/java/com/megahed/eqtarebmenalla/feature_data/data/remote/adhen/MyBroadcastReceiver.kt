@@ -16,7 +16,6 @@ import com.megahed.eqtarebmenalla.feature_data.presentation.ui.home.AdhenAlarmAc
 
 class MyBroadcastReceiver : BroadcastReceiver() {
 
-    @RequiresApi(api = Build.VERSION_CODES.Q)
     override fun onReceive(p0: Context?, p1: Intent?) {
 
 
