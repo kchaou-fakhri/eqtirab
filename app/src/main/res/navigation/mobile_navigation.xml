@@ -137,6 +137,9 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
+
+
+
     <fragment
         android:id="@+id/navigation_tasbeh"
         android:name="com.megahed.eqtarebmenalla.feature_data.presentation.ui.tasbeh.TasbehFragment"
