@@ -114,6 +114,7 @@ class ListenerHelperFragment : Fragment() {
 
                         }
                         binding.soraStartEditText.isEnabled = true
+                        binding.nbEyaEnd.isEnabled = false
                         adapterEya.notifyDataSetChanged()
 
                     }
