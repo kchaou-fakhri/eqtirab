@@ -22,6 +22,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageView
+        android:id="@+id/qibla"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#00FFFFFF"
+        android:paddingTop="@dimen/_5sdp"
+        android:paddingBottom="@dimen/_15sdp"
+        android:src="@drawable/ic_qibla"
+
+        app:tint="@color/white"
+
+
+        tools:layout_editor_absoluteX="346dp" />
+
+
+
 
     <TextView
         android:id="@+id/currentLocation"

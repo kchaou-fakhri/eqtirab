@@ -1,60 +1,70 @@
 package com.megahed.eqtarebmenalla.feature_data.presentation.ui.qibla
 
+import android.content.Context
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.RotateAnimation
+import androidx.core.content.ContextCompat.getSystemService
 import com.megahed.eqtarebmenalla.R
+import com.megahed.eqtarebmenalla.databinding.FragmentQiblaBinding
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [QiblaFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class QiblaFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+class QiblaFragment : Fragment(), SensorEventListener {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
-
+    lateinit var binding : FragmentQiblaBinding
+    lateinit var sensorManager : SensorManager
+    lateinit var sensor: Sensor
+    var curent_degree =0.0
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_qibla, container, false)
+        binding = FragmentQiblaBinding.inflate(inflater, container, false)
+        val root : View = binding.root
+
+
+
+        sensorManager = requireActivity().getSystemService(Context.SENSOR_SERVICE) as SensorManager
+
+
+
+        return root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment QiblaFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            QiblaFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    override fun onSensorChanged(event: SensorEvent?) {
+       var degree = Math.round(event?.values?.get(0)!!).toDouble()
+        var rotateAnimation = RotateAnimation(
+            curent_degree.toFloat(), (-degree).toFloat(),
+                Animation.RELATIVE_TO_SELF, 0.5F, Animation.RELATIVE_TO_SELF, 0.5F)
+
+        rotateAnimation.duration = 500
+        rotateAnimation.repeatCount = 0
+        rotateAnimation.fillAfter = true
+        binding.compass.startAnimation(rotateAnimation)
+        Log.println(Log.ASSERT, "qibla degr", degree.toString())
+       curent_degree = -degree
     }
+
+    override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
+    }
+
+    override fun onResume() {
+        super.onResume()
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION), SensorManager.SENSOR_DELAY_GAME)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        sensorManager.unregisterListener(this)
+    }
+
 }
