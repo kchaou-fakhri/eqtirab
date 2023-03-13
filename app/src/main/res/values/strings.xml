@@ -105,6 +105,17 @@
 
 
     </string-array>
+    <string name="title_activity_qibla">QiblaActivity</string>
+    <string name="compass_hands">Compass Dial</string>
 
+
+    <string name="sotw_north">N</string>
+    <string name="sotw_east">E</string>
+    <string name="sotw_south">S</string>
+    <string name="sotw_west">W</string>
+    <string name="sotw_northeast">NE</string>
+    <string name="sotw_northwest">NW</string>
+    <string name="sotw_southeast">SE</string>
+    <string name="sotw_southwest">SW</string>
 
 </resources>
