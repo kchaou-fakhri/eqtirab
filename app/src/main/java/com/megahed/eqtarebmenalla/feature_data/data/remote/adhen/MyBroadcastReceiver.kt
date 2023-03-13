@@ -8,10 +8,12 @@ import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Build
-import android.util.Log
+
 import androidx.core.app.NotificationCompat
 import com.megahed.eqtarebmenalla.R
+import com.megahed.eqtarebmenalla.common.Constants
 import com.megahed.eqtarebmenalla.feature_data.presentation.ui.home.AdhenAlarmActivity
+import java.util.*
 
 
 class MyBroadcastReceiver : BroadcastReceiver() {
@@ -24,34 +26,28 @@ class MyBroadcastReceiver : BroadcastReceiver() {
 //            val mp = MediaPlayer.create(p0 , R.raw.adhen)
 //            mp.start()
 
-//
+        var salet = checkSalaet()
 
-        sharedPreference =  p0!!.getSharedPreferences("adhen",Context.MODE_PRIVATE)
 
         val intent = Intent(p0, AdhenAlarmActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
-        var title = sharedPreference.getString("title","").toString()
-        var text = sharedPreference.getString("text","").toString()
-        var _channelId = sharedPreference.getString("channelId","").toString()
-        var id    = sharedPreference.getString("id","0")?.toInt()
 
-        Log.println(Log.ASSERT, "----------", title)
 
 
 
         val pendingIntent: PendingIntent = PendingIntent.getActivity(p0, 0, intent, PendingIntent.FLAG_IMMUTABLE)
 
 
-        var builder = NotificationCompat.Builder(p0!!, _channelId)
+        var builder = NotificationCompat.Builder(p0!!, salet.channelId)
             .setSmallIcon(R.drawable.prayer_icon)
-            .setContentTitle(title)
+            .setContentTitle(salet.title)
            // .setContentText(text)
 
             .setStyle(
                 NotificationCompat.BigTextStyle()
 
-                .bigText(text))
+                .bigText(salet.text))
             .setContentIntent(pendingIntent)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
@@ -64,7 +60,7 @@ class MyBroadcastReceiver : BroadcastReceiver() {
 
 // === Removed some obsoletes
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channelId = _channelId
+            val channelId = salet.channelId
             val channel = NotificationChannel(
                 channelId,
                 "Channel human readable title",
@@ -87,7 +83,7 @@ class MyBroadcastReceiver : BroadcastReceiver() {
             }
         }
 
-        notificationManager?.notify(id!!, builder.build());
+        notificationManager?.notify(salet.id, builder.build());
 
 
 //
@@ -96,23 +92,42 @@ class MyBroadcastReceiver : BroadcastReceiver() {
 //
 //            p0?.startActivity(i)
 
+    }
 
+    private fun checkSalaet() : Salet{
 
- //       val builder = NotificationCompat.Builder(requireContext(), "FajerAdhen")
-//                    .setSmallIcon(R.drawable.prayer_icon)
-//                    .setContentTitle("أذان صلاة الفجر")
-//                    .setContentText("حان الأن وقت صلاة الفجر")
-//                    .setAutoCancel(true)
-//                    .setDefaults(NotificationCompat.PRIORITY_HIGH)
-//                    .setContentIntent(pendingIntent)
-//                val notificationManager = NotificationManagerCompat.from(requireContext())
-//                if (ActivityCompat.checkSelfPermission(
-//                        requireContext(),
-//                        Manifest.permission.POST_NOTIFICATIONS
-//                    ) != PackageManager.PERMISSION_GRANTED
-//                ) {
-//
-//                }
-//                notificationManager.notify(111, builder.build())
+        var salet : Salet? = null
+        val cal: Calendar = Calendar.getInstance()
+         var hours = cal.get(Calendar.HOUR_OF_DAY)
+         var minute = cal.get(Calendar.MINUTE)
+
+        if (hours in 3..6 ){
+            salet = Salet("اذان الفجر",Constants.maw3idha.get((0..10).random()),"fajr",10001)
+        }
+        else if (hours in 12..13){
+            salet = Salet("اذان صلاة الظهر",Constants.maw3idha.get((0..10).random()),"dhuhr",10002)
+
+        }
+        else if (hours in 14..16){
+            salet = Salet("اذان صلاة العصر",Constants.maw3idha.get((0..10).random()),"asr",10003)
+
+        }
+        else if (hours in 17..19){
+            salet = Salet("اذان صلاة المغرب",Constants.maw3idha.get((0..10).random()),"maghrib",10004)
+
+        }
+        else if (hours in 20..21){
+            salet = Salet("اذان صلاة العشاء",Constants.maw3idha.get((0..10).random()),"isha",10005)
+
+        }
+        else{
+            salet = Salet("اذان الصلاة",Constants.maw3idha.get((0..10).random()),"else",10006)
+        }
+        return salet!!
     }
 }
+
+data class Salet(var title : String,
+                    var text: String,
+                        var channelId : String,
+                            var id : Int)

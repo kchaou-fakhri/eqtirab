@@ -35,6 +35,7 @@ import com.google.android.gms.location.*
 import com.megahed.eqtarebmenalla.MethodHelper
 import com.megahed.eqtarebmenalla.R
 import com.megahed.eqtarebmenalla.common.CommonUtils
+import com.megahed.eqtarebmenalla.common.LoadingAlert
 import com.megahed.eqtarebmenalla.databinding.FragmentHomeBinding
 import com.megahed.eqtarebmenalla.db.model.PrayerTime
 import com.megahed.eqtarebmenalla.feature_data.data.remote.adhen.MyBroadcastReceiver
@@ -63,6 +64,7 @@ class HomeFragment : Fragment(), LocationListener {
     lateinit var notificationManager : NotificationManager
     lateinit var notificationChannel : NotificationChannel
     lateinit var builder : Notification.Builder
+    lateinit var loadingAlert: LoadingAlert
 
 
 
@@ -83,6 +85,12 @@ class HomeFragment : Fragment(), LocationListener {
 
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
+
+        // create loading alert
+
+        loadingAlert = LoadingAlert(requireActivity())
+        loadingAlert.startLoadingAlert()
+
 
         sharedPreference =  requireActivity().getSharedPreferences("adhen",Context.MODE_PRIVATE)
         var editor = sharedPreference.edit()
@@ -121,6 +129,7 @@ class HomeFragment : Fragment(), LocationListener {
                 binding.asrTime.text = CommonUtils.convertSalahTime(it.Asr)
                 binding.maghribTime.text = CommonUtils.convertSalahTime(it.Maghrib)
                 binding.ishaTime.text = CommonUtils.convertSalahTime(it.Isha)
+                    loadingAlert.dismissDialog()
 
 
                 val currentTime = CommonUtils.getCurrentTime()
@@ -405,107 +414,30 @@ class HomeFragment : Fragment(), LocationListener {
         binding.cbFajr.setOnCheckedChangeListener { compoundButton, b ->
             if(binding.cbFajr.isChecked){
 
-//                createNotificationChannel(/*binding.fajrTime.text.toString().substring(0,2).toInt(),
-//                                             binding.fajrTime.text.toString().substring(3,5).toInt(),*/17, 13,
-//                    "اذان الفجر" ,  " قال الله تعالى: فَأَقِيمُوا الصَّلَاةَ إِنَّ الصَّلَاةَ كَانَتْ عَلَى الْمُؤْمِنِينَ كِتَابًا مَوْقُوتًا {النساء:103}." , 110 )
-//
                 editor.putString("fajr","true")
                 editor.commit()
-//
-                var houre =  22 //binding.fajrTime.text.toString().substring(0,2).toInt()
-                var minute = 28 //binding.fajrTime.text.toString().substring(3,5).toInt()
+
+                var houre = binding.fajrTime.text.toString().substring(0,2).toInt()
+                var minute = binding.fajrTime.text.toString().substring(3,5).toInt()
                 val cal: Calendar = Calendar.getInstance()
                 cal[Calendar.HOUR_OF_DAY] =  houre
                 cal[Calendar.MINUTE]      =  minute
 
-                cal[Calendar.SECOND]      = 20
-                cal[Calendar.MILLISECOND] = 0
-
-
-
-
-
-
-
 
                 var intent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java)
-                editor.putString("title", "اذان الفجر")
-                editor.putString("text", " قال الله تعالى: فَأَقِيمُوا الصَّلَاةَ إِنَّ الصَّلَاةَ كَانَتْ عَلَى الْمُؤْمِنِينَ كِتَابًا مَوْقُوتًا {النساء:103}.")
-                editor.putString("channelId", "fajr")
-                editor.putString("id", "100")
-                editor.commit()
-                //  intent.addCategory("android.intent.category.DEFAULT")
+
                 var pendingIntent : PendingIntent= PendingIntent.getBroadcast(requireContext().applicationContext,
                                                                             110, intent, PendingIntent.FLAG_IMMUTABLE)
                 var am : AlarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() +5000 , AlarmManager.INTERVAL_DAY,  pendingIntent)
+                am.setRepeating(AlarmManager.RTC_WAKEUP, cal.timeInMillis , AlarmManager.INTERVAL_DAY,  pendingIntent)
 
-//                smplrAlarmSet(requireContext().applicationContext) {
-//                    hour { houre }
-//                    min { minute}
-//                   requestCode { 111 }
-//                    isActive { true }
-//
-//
-//                    weekdays {
-//                        monday()
-//                        friday()
-//                        sunday()
-//                        thursday()
-//                        saturday()
-//                        wednesday()
-//                        tuesday()
-//                    }
-//
-//                    val snoozeIntent = Intent(requireContext().applicationContext, AdhenAlarmActivity::class.java).apply {
-//                        action = "ACTION_SNOOZE"
-//                        putExtra("HOUR", houre)
-//                        putExtra("MINUTE", minute)
-//                    }
-//
-//
-//                    val dismissIntent = Intent(requireContext().applicationContext, AdhenAlarmActivity::class.java).apply {
-//                        action = "ACTION_DISMISS"
-//                    }
-//
-//
-//
-//                    notification {
-//                        alarmNotification {
-//                            smallIcon { R.drawable.prayer_icon }
-//                            title { "اذان الفجر" }
-//
-//                            message { " قال الله تعالى: فَأَقِيمُوا الصَّلَاةَ إِنَّ الصَّلَاةَ كَانَتْ عَلَى الْمُؤْمِنِينَ كِتَابًا مَوْقُوتًا {النساء:103}." }
-//
-//                         //   autoCancel { true }
-//                            firstButtonText { "Snooze" }
-//                            secondButtonText { "Dismiss" }
-//                            firstButtonIntent { snoozeIntent }
-//                            secondButtonIntent { dismissIntent }
-//
-//
-//                        }
-//                    }
-//
-//                    notificationChannel {
-//                        channel {
-//                            importance { NotificationManager.IMPORTANCE_DEFAULT }
-//                            showBadge { true }
-//                            name { "de.coldtea.smplr.alarm.channel" }
-//                            description { "This notification channel is created by SmplrAlarm" }
-//                        }
-//                    }
-//
-//                }
 
             }
             else{
                 editor.putString("fajr","false")
                 editor.commit()
 
-                smplrAlarmCancel(requireContext().applicationContext) {
-                    requestCode { 111 }
-                }
+
 
                 var intent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java)
                 var pendingIntent : PendingIntent= PendingIntent.getBroadcast(requireContext().applicationContext,
@@ -530,75 +462,14 @@ class HomeFragment : Fragment(), LocationListener {
 
 
 
-                editor.putString("title", "اذان صلاة الظهر" )
-                editor.putString("text",  "قَالَ -ص- : مَنْ صَلَّى أَرْبَعًا قَبْلَ الظُّهْرِ وَأَرْبَعًا بَعْدَهَا لَمْ تَمَسَّهُ النَّارُ  .")
-                editor.putString("channelId", "dhuhr")
-                editor.putString("id", "121")
-                editor.commit()
+
 
                 var intent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java)
                 var pendingIntent : PendingIntent= PendingIntent.getBroadcast(requireContext().applicationContext,
                     120, intent,PendingIntent.FLAG_IMMUTABLE)
                 var am : AlarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+10000,AlarmManager.INTERVAL_DAY,  pendingIntent)
+                am.setRepeating(AlarmManager.RTC_WAKEUP, cal.timeInMillis,AlarmManager.INTERVAL_DAY,  pendingIntent)
 
-
-
-
-
-
-
-
-                //  intent.addCategory("android.intent.category.DEFAULT")
-
-
-
-
-
-//                smplrAlarmSet(requireContext().applicationContext) {
-//                    hour { houre }
-//                    min { minute}
-//                    requestCode { 121 }
-//                    isActive { true }
-//                    weekdays {
-//                        monday()
-//                        friday()
-//                        sunday()
-//                        thursday()
-//                        saturday()
-//                        wednesday()
-//                        tuesday()
-//                    }
-
-//                    val snoozeIntent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java).apply {
-//                        action = "ACTION_SNOOZE"
-//                        putExtra("HOUR", houre)
-//                        putExtra("MINUTE", minute)
-//
-//                    }
-//
-//                    notification {
-//                        alarmNotification {
-//                            smallIcon { R.drawable.prayer_icon }
-//                            title { "اذان صلاة الظهر" }
-//                            message { "قَالَ -ص- : مَنْ صَلَّى أَرْبَعًا قَبْلَ الظُّهْرِ وَأَرْبَعًا بَعْدَهَا لَمْ تَمَسَّهُ النَّارُ  ." }
-//                            autoCancel { true }
-//                            firstButtonText { "Snooze" }
-//                            secondButtonText { "Dismiss" }
-//
-//
-//                        }
-//                    }
-//                    notificationChannel {
-//                        channel {
-//                            importance { NotificationManager.IMPORTANCE_HIGH }
-//                            showBadge { true }
-//                            name { "de.coldtea.smplr.alarm.channel" }
-//                            description { "This notification channel is created by SmplrAlarm" }
-//                        }
-//                    }
-//
-//                }
 
 
             }
@@ -606,9 +477,6 @@ class HomeFragment : Fragment(), LocationListener {
                 editor.putString("dhuhr","false")
                 editor.commit()
 
-                smplrAlarmCancel(requireContext().applicationContext) {
-                    requestCode { 121 }
-                }
 
                 var intent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java)
                 var pendingIntent : PendingIntent= PendingIntent.getBroadcast(requireContext().applicationContext,
@@ -645,55 +513,7 @@ class HomeFragment : Fragment(), LocationListener {
                 am.setRepeating(AlarmManager.RTC_WAKEUP, cal.timeInMillis ,AlarmManager.INTERVAL_DAY,  pendingIntent)
 
 
-                val dismissIntent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java).apply {
 
-                }
-
-
-                smplrAlarmSet(requireContext().applicationContext) {
-                    hour { houre }
-                    min { minute}
-                    requestCode { 131 }
-                    isActive { true }
-                    weekdays {
-                        monday()
-                        friday()
-                        sunday()
-                        thursday()
-                        saturday()
-                        wednesday()
-                        tuesday()
-                    }
-
-//                    val snoozeIntent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java).apply {
-//                        action = "ACTION_SNOOZE"
-//                        putExtra("HOUR", houre)
-//                        putExtra("MINUTE", minute)
-//
-//                    }
-
-                    notification {
-                        alarmNotification {
-                            smallIcon { R.drawable.prayer_icon }
-                            title { "اذان صلاة العصر" }
-                            message { "حان وقت صلاة العصر" }
-                            autoCancel { true }
-                            firstButtonText { "Snooze" }
-                            secondButtonText { "Dismiss" }
-
-
-                        }
-                    }
-                    notificationChannel {
-                        channel {
-                            importance { NotificationManager.IMPORTANCE_HIGH }
-                            showBadge { true }
-                            name { "de.coldtea.smplr.alarm.channel" }
-                            description { "This notification channel is created by SmplrAlarm" }
-                        }
-                    }
-
-                }
 
 
             }
@@ -701,9 +521,6 @@ class HomeFragment : Fragment(), LocationListener {
                 editor.putString("asr","false")
                 editor.commit()
 
-                smplrAlarmCancel(requireContext().applicationContext) {
-                    requestCode { 131 }
-                }
 
                 var intent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java)
                 var pendingIntent : PendingIntent= PendingIntent.getBroadcast(requireContext().applicationContext,
@@ -738,55 +555,6 @@ class HomeFragment : Fragment(), LocationListener {
                 am.setRepeating(AlarmManager.RTC_WAKEUP, cal.timeInMillis ,AlarmManager.INTERVAL_DAY,  pendingIntent)
 
 
-                val dismissIntent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java).apply {
-
-                }
-
-
-                smplrAlarmSet(requireContext().applicationContext) {
-                    hour { houre }
-                    min { minute}
-                    requestCode { 141 }
-                    isActive { true }
-
-                    weekdays {
-                        monday()
-                        friday()
-                        sunday()
-                        thursday()
-                        saturday()
-                        wednesday()
-                        tuesday()
-                    }
-//                    val snoozeIntent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java).apply {
-//                        action = "ACTION_SNOOZE"
-//                        putExtra("HOUR", houre)
-//                        putExtra("MINUTE", minute)
-//
-//                    }
-
-                    notification {
-                        alarmNotification {
-                            smallIcon { R.drawable.prayer_icon }
-                            title { "اذان صلاة المغرب" }
-                            message {"قال الله تعالى : ( وَاسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ وَإِنَّهَا لَكَبِيرَةٌ إِلَّا عَلَى الْخَاشِعِينَ ) البقرة /45."}
-                            autoCancel { true }
-                            firstButtonText { "Snooze" }
-                            secondButtonText { "Dismiss" }
-
-
-                        }
-                    }
-                    notificationChannel {
-                        channel {
-                            importance { NotificationManager.IMPORTANCE_HIGH }
-                            showBadge { true }
-                            name { "de.coldtea.smplr.alarm.channel" }
-                            description { "This notification channel is created by SmplrAlarm" }
-                        }
-                    }
-
-                }
 
 
             }
@@ -794,9 +562,6 @@ class HomeFragment : Fragment(), LocationListener {
                 editor.putString("maghrib","false")
                 editor.commit()
 
-                smplrAlarmCancel(requireContext().applicationContext) {
-                    requestCode { 141 }
-                }
 
                 var intent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java)
                 var pendingIntent : PendingIntent= PendingIntent.getBroadcast(requireContext().applicationContext,
@@ -831,65 +596,12 @@ class HomeFragment : Fragment(), LocationListener {
                 am.setRepeating(AlarmManager.RTC_WAKEUP, cal.timeInMillis ,AlarmManager.INTERVAL_DAY,  pendingIntent)
 
 
-                val dismissIntent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java).apply {
-
-                }
-
-
-                smplrAlarmSet(requireContext().applicationContext) {
-                    hour { houre }
-                    min { minute}
-                    requestCode { 151 }
-                    isActive { true }
-                    weekdays {
-                        monday()
-                        friday()
-                        sunday()
-                        thursday()
-                        saturday()
-                        wednesday()
-                        tuesday()
-                    }
-
-//                    val snoozeIntent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java).apply {
-//                        action = "ACTION_SNOOZE"
-//                        putExtra("HOUR", houre)
-//                        putExtra("MINUTE", minute)
-//
-//                    }
-
-                    notification {
-                        alarmNotification {
-                            smallIcon { R.drawable.prayer_icon }
-                            title { "اذان صلاة العشاء" }
-                            message {"عن رسول الله صلى الله عليه وسلم قال: من صلى العشاء في جماعة، فكأنما قام نصف الليل، ومن صلى الصبح في جماعة فكأنما صلى الليل كله."}
-                            autoCancel { true }
-                            firstButtonText { "Snooze" }
-                            secondButtonText { "Dismiss" }
-
-
-                        }
-                    }
-                    notificationChannel {
-                        channel {
-                            importance { NotificationManager.IMPORTANCE_HIGH }
-                            showBadge { true }
-                            name { "de.coldtea.smplr.alarm.channel" }
-                            description { "This notification channel is created by SmplrAlarm" }
-                        }
-                    }
-
-                }
-
 
             }
             else{
                 editor.putString("isha","false")
                 editor.commit()
 
-                smplrAlarmCancel(requireContext().applicationContext) {
-                    requestCode { 151 }
-                }
 
                 var intent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java)
                 var pendingIntent : PendingIntent= PendingIntent.getBroadcast(requireContext().applicationContext,
@@ -926,64 +638,6 @@ class HomeFragment : Fragment(), LocationListener {
                 am.setRepeating(AlarmManager.RTC_WAKEUP, cal.timeInMillis ,AlarmManager.INTERVAL_DAY,  pendingIntent)
 
 
-
-                smplrAlarmUpdate(requireContext().applicationContext) {
-                    requestCode { 111 }
-                    hour { houre }
-                    min { minute }
-                    weekdays {
-                        monday()
-                        friday()
-                        sunday()
-                        thursday()
-                        saturday()
-                        wednesday()
-                        tuesday()
-                    }
-                    isActive { true }
-                }
-            }
-
-
-            if (sharedPreference.getString("dhuhr","") == "true"){
-
-
-                editor.putString("dhuhr","true")
-                editor.commit()
-                var houre = binding.dhuhrTime.text.toString().substring(0,2).toInt()
-                var minute = binding.dhuhrTime.text.toString().substring(3,5).toInt()
-                val cal: Calendar = Calendar.getInstance()
-                cal[Calendar.HOUR_OF_DAY] = houre
-                cal[Calendar.MINUTE]      = minute
-                cal[Calendar.SECOND]      = 0
-                cal[Calendar.MILLISECOND] = 0
-
-
-
-
-
-                var intent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java)
-                var pendingIntent : PendingIntent= PendingIntent.getBroadcast(requireContext().applicationContext,
-                    120, intent,PendingIntent.FLAG_IMMUTABLE)
-                var am : AlarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                am.setRepeating(AlarmManager.RTC_WAKEUP, cal.timeInMillis ,AlarmManager.INTERVAL_DAY,  pendingIntent)
-
-
-                smplrAlarmUpdate(requireContext().applicationContext) {
-                    requestCode { 121 }
-                    hour { houre }
-                    min { minute }
-                    weekdays {
-                        monday()
-                        friday()
-                        sunday()
-                        thursday()
-                        saturday()
-                        wednesday()
-                        tuesday()
-                    }
-                    isActive { true }
-                }
             }
 
 
@@ -998,10 +652,6 @@ class HomeFragment : Fragment(), LocationListener {
                 cal[Calendar.SECOND]      = 0
                 cal[Calendar.MILLISECOND] = 0
 
-
-
-
-
                 var intent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java)
                 var pendingIntent : PendingIntent= PendingIntent.getBroadcast(requireContext().applicationContext,
                     130, intent,PendingIntent.FLAG_IMMUTABLE)
@@ -1009,21 +659,28 @@ class HomeFragment : Fragment(), LocationListener {
                 am.setRepeating(AlarmManager.RTC_WAKEUP, cal.timeInMillis ,AlarmManager.INTERVAL_DAY,  pendingIntent)
 
 
-                smplrAlarmUpdate(requireContext().applicationContext) {
-                    requestCode { 131 }
-                    hour { houre }
-                    min { minute }
-                    weekdays {
-                        monday()
-                        friday()
-                        sunday()
-                        thursday()
-                        saturday()
-                        wednesday()
-                        tuesday()
-                    }
-                    isActive { true }
-                }
+
+            }
+
+            if (sharedPreference.getString("dhuhr","") == "true"){
+
+
+                editor.putString("dhuhr","true")
+                editor.commit()
+                var houre = binding.dhuhrTime.text.toString().substring(0,2).toInt()
+                var minute = binding.dhuhrTime.text.toString().substring(3,5).toInt()
+                val cal: Calendar = Calendar.getInstance()
+                cal[Calendar.HOUR_OF_DAY] = houre
+                cal[Calendar.MINUTE]      = minute
+                cal[Calendar.SECOND]      = 0
+                cal[Calendar.MILLISECOND] = 0
+
+                var intent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java)
+                var pendingIntent : PendingIntent= PendingIntent.getBroadcast(requireContext().applicationContext,
+                    120, intent,PendingIntent.FLAG_IMMUTABLE)
+                var am : AlarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                am.setRepeating(AlarmManager.RTC_WAKEUP, cal.timeInMillis ,AlarmManager.INTERVAL_DAY,  pendingIntent)
+
             }
 
 
@@ -1046,21 +703,7 @@ class HomeFragment : Fragment(), LocationListener {
                 var am : AlarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
                 am.setRepeating(AlarmManager.RTC_WAKEUP, cal.timeInMillis ,AlarmManager.INTERVAL_DAY,  pendingIntent)
 
-                smplrAlarmUpdate(requireContext().applicationContext) {
-                    requestCode { 141 }
-                    hour { houre }
-                    min { minute }
-                    weekdays {
-                        monday()
-                        friday()
-                        sunday()
-                        thursday()
-                        saturday()
-                        wednesday()
-                        tuesday()
-                    }
-                    isActive { true }
-                }
+
             }
 
             if (sharedPreference.getString("isha","") == "true"){
@@ -1073,9 +716,6 @@ class HomeFragment : Fragment(), LocationListener {
                 cal[Calendar.MILLISECOND] = 0
 
 
-
-
-
                 var intent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java)
                 var pendingIntent : PendingIntent= PendingIntent.getBroadcast(requireContext().applicationContext,
                     150, intent,PendingIntent.FLAG_IMMUTABLE)
@@ -1083,103 +723,12 @@ class HomeFragment : Fragment(), LocationListener {
                 am.setRepeating(AlarmManager.RTC_WAKEUP, cal.timeInMillis ,AlarmManager.INTERVAL_DAY,  pendingIntent)
 
 
-                smplrAlarmUpdate(requireContext().applicationContext) {
-                    requestCode { 151 }
-                    hour { houre }
-                    min { minute }
-                    weekdays {
-                        monday()
-                        friday()
-                        sunday()
-                        thursday()
-                        saturday()
-                        wednesday()
-                        tuesday()
-                    }
-                    isActive { true }
-                }
             }
 
             Toast.makeText(requireContext(), "تم تحديث أوقات الصلاة", Toast.LENGTH_LONG).show()
         }
 
         return root
-    }
-
-    private fun createNotificationChannel(hours : Int, minut : Int, title : String, text : String, code : Int ) {
-
-
-        val cal: Calendar = Calendar.getInstance()
-        cal[Calendar.HOUR_OF_DAY] =  hours
-        cal[Calendar.MINUTE]      =  minut
-        cal[Calendar.SECOND]      = 0
-        cal[Calendar.MILLISECOND] = 0
-
-
-
-
-
-        var intent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java)
-        //  intent.addCategory("android.intent.category.DEFAULT")
-        var pendingIntent : PendingIntent= PendingIntent.getBroadcast(requireContext().applicationContext,
-            code, intent, PendingIntent.FLAG_IMMUTABLE)
-        var am : AlarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        am.setRepeating(AlarmManager.RTC_WAKEUP, cal.timeInMillis , AlarmManager.INTERVAL_DAY,  pendingIntent)
-//
-
-
-
-
-        smplrAlarmSet(requireContext().applicationContext) {
-            hour { hours }
-            min { minut}
-            requestCode { code+1 }
-            isActive { true }
-
-
-            weekdays {
-                monday()
-                friday()
-                sunday()
-                thursday()
-                saturday()
-                wednesday()
-                tuesday()
-            }
-
-
-
-
-            notification {
-                alarmNotification {
-                    smallIcon { R.drawable.prayer_icon }
-                    title { title }
-
-                    message { text}
-
-                    autoCancel { true }
-                    firstButtonText { "Snooze" }
-                    secondButtonText { "Dismiss" }
-
-
-                }
-            }
-            notificationChannel {
-                channel {
-                    importance { NotificationManager.IMPORTANCE_HIGH }
-                    showBadge { true }
-                    name { "de.coldtea.smplr.alarm.channels" }
-                    description { "This notification channel is created by SmplrAlarm" }
-                }
-            }
-
-        }
-
-
-
-
-
-
     }
 
 
