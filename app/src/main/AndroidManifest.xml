@@ -73,7 +73,7 @@
 
         </service>
         -->
-        <receiver android:name=".feature_data.presentation.ui.home.ReminderBrodcast" />
+
     </application>
 
 </manifest>

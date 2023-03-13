@@ -26,7 +26,10 @@
         android:icon="@drawable/tasbeh_icon"
         android:title="@string/tasbeh" />
 
-
+<!--    <item-->
+<!--        android:id="@+id/navigation_qibla"-->
+<!--        android:icon="@drawable/ic_qibla"-->
+<!--        android:title="@string/qibla" />-->
 
     <!--
 
