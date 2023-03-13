@@ -3,6 +3,7 @@
     android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="#496154"
     android:paddingBottom="@dimen/activity_vertical_margin">
 
    <ImageView
@@ -10,7 +11,6 @@
        android:layout_width="320dp"
        android:layout_height="320dp"
        android:layout_centerInParent="true"
-
        android:src="@drawable/dial" />
 
    <ImageView
@@ -25,6 +25,11 @@
    <TextView
        android:id="@+id/sotw_label"
        android:layout_width="wrap_content"
-       android:layout_height="wrap_content" />
+       android:layout_height="wrap_content"
+       android:textColor="@color/white"
+
+       />
+
+
 
 </RelativeLayout>

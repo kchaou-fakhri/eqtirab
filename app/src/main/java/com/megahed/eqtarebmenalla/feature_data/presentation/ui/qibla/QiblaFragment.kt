@@ -7,14 +7,12 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.RotateAnimation
-import androidx.core.content.ContextCompat.getSystemService
-import com.megahed.eqtarebmenalla.R
+import androidx.fragment.app.Fragment
 import com.megahed.eqtarebmenalla.databinding.FragmentQiblaBinding
 
 
@@ -23,7 +21,9 @@ class QiblaFragment : Fragment(), SensorEventListener {
     lateinit var binding : FragmentQiblaBinding
     lateinit var sensorManager : SensorManager
     lateinit var sensor: Sensor
-    var curent_degree =0.0
+    private var sensorAccelerometer: Sensor? = null
+    private var sensorMagneticField: Sensor? = null
+    var curent_degree =0F
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -32,25 +32,26 @@ class QiblaFragment : Fragment(), SensorEventListener {
         val root : View = binding.root
 
 
-
         sensorManager = requireActivity().getSystemService(Context.SENSOR_SERVICE) as SensorManager
-
 
 
         return root
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
-       var degree = Math.round(event?.values?.get(0)!!).toDouble()
+        val type = event!!.sensor.type
+        val data: FloatArray
+
+       var degree = Math.round(event.values[0]).toFloat()
         var rotateAnimation = RotateAnimation(
-            curent_degree.toFloat(), (-degree).toFloat(),
+            curent_degree, -degree,
                 Animation.RELATIVE_TO_SELF, 0.5F, Animation.RELATIVE_TO_SELF, 0.5F)
 
-        rotateAnimation.duration = 500
-        rotateAnimation.repeatCount = 0
-        rotateAnimation.fillAfter = true
-        binding.compass.startAnimation(rotateAnimation)
+        rotateAnimation.duration = 210
+        binding.mainImageDial.startAnimation(rotateAnimation)
+//        rotateAnimation.fillAfter = true
         Log.println(Log.ASSERT, "qibla degr", degree.toString())
+        binding.sotwLabel.text = degree.toString()
        curent_degree = -degree
     }
 
