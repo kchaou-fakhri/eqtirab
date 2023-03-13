@@ -42,7 +42,7 @@ import com.megahed.eqtarebmenalla.feature_data.data.remote.adhen.MyBroadcastRece
 import com.megahed.eqtarebmenalla.feature_data.presentation.viewoModels.IslamicViewModel
 import com.megahed.eqtarebmenalla.feature_data.presentation.viewoModels.PrayerTimeViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import de.coldtea.smplr.smplralarm.*
+
 import java.io.IOException
 import java.text.DateFormat
 import java.util.*
@@ -425,11 +425,10 @@ class HomeFragment : Fragment(), LocationListener {
 
 
                 var intent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java)
-
                 var pendingIntent : PendingIntent= PendingIntent.getBroadcast(requireContext().applicationContext,
-                                                                            110, intent, PendingIntent.FLAG_IMMUTABLE)
+                    1560, intent,PendingIntent.FLAG_IMMUTABLE)
                 var am : AlarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                am.setRepeating(AlarmManager.RTC_WAKEUP, cal.timeInMillis , AlarmManager.INTERVAL_DAY,  pendingIntent)
+                am.setRepeating(AlarmManager.RTC_WAKEUP, cal.timeInMillis ,AlarmManager.INTERVAL_DAY,  pendingIntent)
 
 
             }
