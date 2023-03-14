@@ -64,7 +64,7 @@ class QiblaFragment : Fragment(), SensorEventListener {
             curent_degree, -degree,
                 Animation.RELATIVE_TO_SELF, 0.5F, Animation.RELATIVE_TO_SELF, 0.5F)
 
-        rotateAnimation.duration = 210
+        rotateAnimation.duration = 100
         binding.mainImageDial.startAnimation(rotateAnimation)
 //        rotateAnimation.fillAfter = true
         Log.println(Log.ASSERT, "qibla degr", degree.toString())
