@@ -257,6 +257,7 @@ class HomeFragment : Fragment(), LocationListener {
                     lastLocation?.let {
                         getCountryFromLocation(it)
 
+
                         mainViewModel.getAzanData(it.latitude,it.longitude)
 
                     }
@@ -729,7 +730,12 @@ class HomeFragment : Fragment(), LocationListener {
 //            val intent = Intent(requireContext(), QiblaActivity::class.java)
 //            requireContext().startActivity(intent)
 
-            findNavController().navigate(R.id.action_navigation_home_to_qiblaFragment2)
+            val bundle = Bundle()
+            bundle.putString("altitude", lastLocation?.altitude.toString())
+            bundle.putString("longitude", lastLocation?.longitude.toString())
+
+            findNavController().navigate(R.id.action_navigation_home_to_qiblaFragment2, bundle)
+
 
 
         }
@@ -936,10 +942,12 @@ class HomeFragment : Fragment(), LocationListener {
             val addresses = geocoder.getFromLocation(
                 location.latitude, location.longitude, 1
             )
+
             if (addresses != null && addresses.size > 0) {
                val country = addresses[0].adminArea
                 val city = addresses[0].subAdminArea
                 binding.currentLocation.text = "$city,$country"
+
                 //Toast.makeText(requireContext(),"$city,$country ", Toast.LENGTH_LONG).show()
             }
         } catch (e: IOException) {
@@ -950,7 +958,8 @@ class HomeFragment : Fragment(), LocationListener {
 
 
 
-
+        var lang = ""
+        var lati = ""
 
 
 }
