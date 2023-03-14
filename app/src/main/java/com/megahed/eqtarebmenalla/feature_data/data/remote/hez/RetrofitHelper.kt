@@ -1,5 +1,6 @@
 package com.megahed.eqtarebmenalla.feature_data.data.remote.hez
 
+import android.provider.SyncStateContract.Constants
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -10,7 +11,7 @@ object RetrofitHelper {
 
 
 
-           Retrofit.Builder().baseUrl(baseUrl)
+           Retrofit.Builder().baseUrl(com.megahed.eqtarebmenalla.common.Constants.QURAN_BY_EYA_BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 // we need to add converter factory to
                 // convert JSON object to Java object
