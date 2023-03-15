@@ -8,8 +8,10 @@ import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Build
+import androidx.annotation.RequiresApi
 
 import androidx.core.app.NotificationCompat
+import com.megahed.eqtarebmenalla.MainActivity
 import com.megahed.eqtarebmenalla.R
 import com.megahed.eqtarebmenalla.common.Constants
 import com.megahed.eqtarebmenalla.feature_data.presentation.ui.home.AdhenAlarmActivity
@@ -17,19 +19,19 @@ import java.util.*
 
 
 class MyBroadcastReceiver : BroadcastReceiver() {
-    var mp: MediaPlayer? = null // Here
-    lateinit var  sharedPreference : SharedPreferences
-
+//    var mp: MediaPlayer? = null // Here
+//    lateinit var  sharedPreference : SharedPreferences
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     override fun onReceive(p0: Context?, p1: Intent?) {
 
-//
+
 //            val mp = MediaPlayer.create(p0 , R.raw.adhen)
 //            mp.start()
 
         var salet = checkSalaet()
 
 
-        val intent = Intent(p0, AdhenAlarmActivity::class.java).apply {
+        val intent = Intent(p0, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
 
@@ -42,12 +44,14 @@ class MyBroadcastReceiver : BroadcastReceiver() {
         var builder = NotificationCompat.Builder(p0!!, salet.channelId)
             .setSmallIcon(R.drawable.prayer_icon)
             .setContentTitle(salet.title)
-           // .setContentText(text)
+            .setContentText(salet.text)
+            .setDefaults(NotificationCompat.DEFAULT_VIBRATE)
 
             .setStyle(
                 NotificationCompat.BigTextStyle()
 
-                .bigText(salet.text))
+              //  .bigText(salet.text)
+            )
             .setContentIntent(pendingIntent)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
