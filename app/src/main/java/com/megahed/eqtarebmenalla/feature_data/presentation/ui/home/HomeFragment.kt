@@ -21,6 +21,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -39,6 +40,8 @@ import com.megahed.eqtarebmenalla.feature_data.data.remote.adhen.MyBroadcastRece
 import com.megahed.eqtarebmenalla.feature_data.presentation.viewoModels.IslamicViewModel
 import com.megahed.eqtarebmenalla.feature_data.presentation.viewoModels.PrayerTimeViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import de.coldtea.smplr.smplralarm.*
+import de.coldtea.smplr.smplralarm.apis.SmplrAlarmAPI
 import java.io.IOException
 import java.text.DateFormat
 import java.util.*
@@ -70,6 +73,7 @@ class HomeFragment : Fragment(), LocationListener {
     private lateinit var binding: FragmentHomeBinding
     private var timeStarted : Long = 0
     private var timeElapsed : Long = 0
+    @RequiresApi(Build.VERSION_CODES.S)
     @SuppressLint("MissingPermission")
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -408,6 +412,8 @@ class HomeFragment : Fragment(), LocationListener {
 
         // adhen alarm create by fkchaou 08/03/2023
 
+
+
         binding.cbFajr.setOnCheckedChangeListener { compoundButton, b ->
             if(binding.cbFajr.isChecked){
 
@@ -416,16 +422,53 @@ class HomeFragment : Fragment(), LocationListener {
 
                 var houre = binding.fajrTime.text.toString().substring(0,2).toInt()
                 var minute = binding.fajrTime.text.toString().substring(3,5).toInt()
-                val cal: Calendar = Calendar.getInstance()
-                cal[Calendar.HOUR_OF_DAY] =  houre
-                cal[Calendar.MINUTE]      =  minute
+
+                val alarmReceivedIntent = Intent(
+                    requireContext().applicationContext,
+                    MyBroadcastReceiver::class.java // this class must be inherited from BroadcastReceiver
+                )
 
 
-                var intent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java)
-                var pendingIntent : PendingIntent= PendingIntent.getBroadcast(requireContext().applicationContext,
-                    1560, intent,PendingIntent.FLAG_IMMUTABLE)
-                var am : AlarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                am.setRepeating(AlarmManager.RTC_WAKEUP, cal.timeInMillis ,AlarmManager.INTERVAL_DAY,  pendingIntent)
+
+                smplrAlarmSet(requireContext().applicationContext) {
+                    hour { houre }
+                    min { minute }
+                    requestCode { 1810 }
+                    alarmReceivedIntent { alarmReceivedIntent }
+                     // name of this parameter is intent in the version 2.1.0 and earlier
+
+                    weekdays {
+                        monday()
+                        friday()
+                        sunday()
+                        thursday()
+                        tuesday()
+                        wednesday()
+                        saturday()
+
+
+                    }
+
+                    notification {
+                        alarmNotification {
+                            smallIcon { R.drawable.prayer_icon }
+
+
+                            autoCancel { true }
+
+                        }
+                    }
+                    notificationChannel {
+                        channel {
+                            importance { NotificationManager.IMPORTANCE_HIGH }
+                            showBadge { false }
+                            name { "de.coldtea.smplr.alarm.channel" }
+                            description { "This notification channel is created by SmplrAlarm" }
+                        }
+                    }
+                }
+//
+
 
 
             }
@@ -433,13 +476,11 @@ class HomeFragment : Fragment(), LocationListener {
                 editor.putString("fajr","false")
                 editor.commit()
 
+                smplrAlarmCancel(requireContext().applicationContext) {
+                    requestCode { 1810 }
+                }
 
 
-                var intent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java)
-                var pendingIntent : PendingIntent= PendingIntent.getBroadcast(requireContext().applicationContext,
-                    110, intent,PendingIntent.FLAG_IMMUTABLE)
-                var am : AlarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                am.cancel( pendingIntent)
             }
         }
 
@@ -450,35 +491,63 @@ class HomeFragment : Fragment(), LocationListener {
                 editor.commit()
                 var houre = binding.dhuhrTime.text.toString().substring(0,2).toInt()
                 var minute = binding.dhuhrTime.text.toString().substring(3,5).toInt()
-                val cal: Calendar = Calendar.getInstance()
-                cal[Calendar.HOUR_OF_DAY] = houre
-                cal[Calendar.MINUTE]      = minute
-                cal[Calendar.SECOND]      = 0
-                cal[Calendar.MILLISECOND] = 0
+
+                val alarmReceivedIntent = Intent(
+                    requireContext().applicationContext,
+                    MyBroadcastReceiver::class.java // this class must be inherited from BroadcastReceiver
+                )
 
 
 
+                smplrAlarmSet(requireContext().applicationContext) {
+                    hour { houre }
+                    min { minute }
+                    requestCode { 1820 }
+                    alarmReceivedIntent { alarmReceivedIntent }
+                    // name of this parameter is intent in the version 2.1.0 and earlier
+
+                    weekdays {
+                        monday()
+                        friday()
+                        sunday()
+                        thursday()
+                        tuesday()
+                        wednesday()
+                        saturday()
 
 
-                var intent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java)
-                var pendingIntent : PendingIntent= PendingIntent.getBroadcast(requireContext().applicationContext,
-                    120, intent,PendingIntent.FLAG_IMMUTABLE)
-                var am : AlarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                am.setRepeating(AlarmManager.RTC_WAKEUP, cal.timeInMillis,AlarmManager.INTERVAL_DAY,  pendingIntent)
+                    }
+
+                    notification {
+                        alarmNotification {
+                            smallIcon { R.drawable.prayer_icon }
+
+
+                            autoCancel { true }
+
+                        }
+                    }
+                    notificationChannel {
+                        channel {
+                            importance { NotificationManager.IMPORTANCE_HIGH }
+                            showBadge { false }
+                            name { "de.coldtea.smplr.alarm.channel" }
+                            description { "This notification channel is created by SmplrAlarm" }
+                        }
+                    }
+                }
+//
 
 
 
             }
-            else{
-                editor.putString("dhuhr","false")
+            else {
+                editor.putString("dhuhr", "false")
                 editor.commit()
 
-
-                var intent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java)
-                var pendingIntent : PendingIntent= PendingIntent.getBroadcast(requireContext().applicationContext,
-                    120, intent,PendingIntent.FLAG_IMMUTABLE)
-                var am : AlarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                am.cancel( pendingIntent)
+                smplrAlarmCancel(requireContext().applicationContext) {
+                    requestCode { 1820 }
+                }
             }
         }
 
@@ -489,40 +558,65 @@ class HomeFragment : Fragment(), LocationListener {
                 editor.putString("asr","true")
                 editor.commit()
 
-
-                var houre = binding.asrTime.text.toString().substring(0,2).toInt() +12
+                var houre = binding.asrTime.text.toString().substring(0,2).toInt()+12
                 var minute = binding.asrTime.text.toString().substring(3,5).toInt()
-                val cal: Calendar = Calendar.getInstance()
-                cal[Calendar.HOUR_OF_DAY] = houre
-                cal[Calendar.MINUTE]      = minute
-                cal[Calendar.SECOND]      = 0
-                cal[Calendar.MILLISECOND] = 0
+
+                val alarmReceivedIntent = Intent(
+                    requireContext().applicationContext,
+                    MyBroadcastReceiver::class.java // this class must be inherited from BroadcastReceiver
+                )
 
 
 
+                smplrAlarmSet(requireContext().applicationContext) {
+                    hour { houre }
+                    min { minute }
+                    requestCode { 1830 }
+                    alarmReceivedIntent { alarmReceivedIntent }
+                    // name of this parameter is intent in the version 2.1.0 and earlier
+
+                    weekdays {
+                        monday()
+                        friday()
+                        sunday()
+                        thursday()
+                        tuesday()
+                        wednesday()
+                        saturday()
 
 
-                var intent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java)
-                var pendingIntent : PendingIntent= PendingIntent.getBroadcast(requireContext().applicationContext,
-                    130, intent,PendingIntent.FLAG_IMMUTABLE)
-                var am : AlarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                am.setRepeating(AlarmManager.RTC_WAKEUP, cal.timeInMillis ,AlarmManager.INTERVAL_DAY,  pendingIntent)
+                    }
+
+                    notification {
+                        alarmNotification {
+                            smallIcon { R.drawable.prayer_icon }
 
 
+                            autoCancel { true }
+
+                        }
+                    }
+                    notificationChannel {
+                        channel {
+                            importance { NotificationManager.IMPORTANCE_HIGH }
+                            showBadge { false }
+                            name { "de.coldtea.smplr.alarm.channel" }
+                            description { "This notification channel is created by SmplrAlarm" }
+                        }
+                    }
+                }
+//
 
 
 
             }
-            else{
-                editor.putString("asr","false")
+            else {
+                editor.putString("asr", "false")
                 editor.commit()
 
-
-                var intent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java)
-                var pendingIntent : PendingIntent= PendingIntent.getBroadcast(requireContext().applicationContext,
-                    130, intent,PendingIntent.FLAG_IMMUTABLE)
-                var am : AlarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                am.cancel( pendingIntent)
+                smplrAlarmCancel(requireContext().applicationContext) {
+                    requestCode { 1830 }
+                }
             }
         }
 
@@ -534,36 +628,62 @@ class HomeFragment : Fragment(), LocationListener {
                 editor.commit()
                 var houre = binding.maghribTime.text.toString().substring(0,2).toInt() +12
                 var minute = binding.maghribTime.text.toString().substring(3,5).toInt()
-                val cal: Calendar = Calendar.getInstance()
-                cal[Calendar.HOUR_OF_DAY] = houre
-                cal[Calendar.MINUTE]      = minute
-                cal[Calendar.SECOND]      = 0
-                cal[Calendar.MILLISECOND] = 0
+                val alarmReceivedIntent = Intent(
+                    requireContext().applicationContext,
+                    MyBroadcastReceiver::class.java // this class must be inherited from BroadcastReceiver
+                )
 
 
 
+                smplrAlarmSet(requireContext().applicationContext) {
+                    hour { houre }
+                    min { minute }
+                    requestCode { 1840 }
+                    alarmReceivedIntent { alarmReceivedIntent }
+                    // name of this parameter is intent in the version 2.1.0 and earlier
+
+                    weekdays {
+                        monday()
+                        friday()
+                        sunday()
+                        thursday()
+                        tuesday()
+                        wednesday()
+                        saturday()
 
 
-                var intent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java)
-                var pendingIntent : PendingIntent= PendingIntent.getBroadcast(requireContext().applicationContext,
-                    140, intent,PendingIntent.FLAG_IMMUTABLE)
-                var am : AlarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                am.setRepeating(AlarmManager.RTC_WAKEUP, cal.timeInMillis ,AlarmManager.INTERVAL_DAY,  pendingIntent)
+                    }
 
+                    notification {
+                        alarmNotification {
+                            smallIcon { R.drawable.prayer_icon }
+
+
+                            autoCancel { true }
+
+                        }
+                    }
+                    notificationChannel {
+                        channel {
+                            importance { NotificationManager.IMPORTANCE_HIGH }
+                            showBadge { false }
+                            name { "de.coldtea.smplr.alarm.channel" }
+                            description { "This notification channel is created by SmplrAlarm" }
+                        }
+                    }
+                }
+//
 
 
 
             }
-            else{
-                editor.putString("maghrib","false")
+            else {
+                editor.putString("maghrib", "false")
                 editor.commit()
 
-
-                var intent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java)
-                var pendingIntent : PendingIntent= PendingIntent.getBroadcast(requireContext().applicationContext,
-                    140, intent,PendingIntent.FLAG_IMMUTABLE)
-                var am : AlarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                am.cancel( pendingIntent)
+                smplrAlarmCancel(requireContext().applicationContext) {
+                    requestCode { 1840 }
+                }
             }
         }
 
@@ -575,38 +695,65 @@ class HomeFragment : Fragment(), LocationListener {
                 editor.commit()
                 var houre = binding.ishaTime.text.toString().substring(0,2).toInt() +12
                 var minute = binding.ishaTime.text.toString().substring(3,5).toInt()
-                val cal: Calendar = Calendar.getInstance()
-                cal[Calendar.HOUR_OF_DAY] = houre
-                cal[Calendar.MINUTE]      = minute
-                cal[Calendar.SECOND]      = 0
-                cal[Calendar.MILLISECOND] = 0
+
+                val alarmReceivedIntent = Intent(
+                    requireContext().applicationContext,
+                    MyBroadcastReceiver::class.java // this class must be inherited from BroadcastReceiver
+                )
 
 
 
+                smplrAlarmSet(requireContext().applicationContext) {
+                    hour { houre }
+                    min { minute }
+                    requestCode { 1850 }
+                    alarmReceivedIntent { alarmReceivedIntent }
+                    // name of this parameter is intent in the version 2.1.0 and earlier
+
+                    weekdays {
+                        monday()
+                        friday()
+                        sunday()
+                        thursday()
+                        tuesday()
+                        wednesday()
+                        saturday()
 
 
-                var intent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java)
-                var pendingIntent : PendingIntent= PendingIntent.getBroadcast(requireContext().applicationContext,
-                    150, intent,PendingIntent.FLAG_IMMUTABLE)
-                var am : AlarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                am.setRepeating(AlarmManager.RTC_WAKEUP, cal.timeInMillis ,AlarmManager.INTERVAL_DAY,  pendingIntent)
+                    }
+
+                    notification {
+                        alarmNotification {
+                            smallIcon { R.drawable.prayer_icon }
+
+
+                            autoCancel { true }
+
+                        }
+                    }
+                    notificationChannel {
+                        channel {
+                            importance { NotificationManager.IMPORTANCE_HIGH }
+                            showBadge { false }
+                            name { "de.coldtea.smplr.alarm.channel" }
+                            description { "This notification channel is created by SmplrAlarm" }
+                        }
+                    }
+                }
+//
 
 
 
             }
-            else{
-                editor.putString("isha","false")
+            else {
+                editor.putString("isha", "false")
                 editor.commit()
 
-
-                var intent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java)
-                var pendingIntent : PendingIntent= PendingIntent.getBroadcast(requireContext().applicationContext,
-                    150, intent,PendingIntent.FLAG_IMMUTABLE)
-                var am : AlarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                am.cancel( pendingIntent)
-
-
+                smplrAlarmCancel(requireContext().applicationContext) {
+                    requestCode { 1850 }
+                }
             }
+
         }
 
 
@@ -617,21 +764,27 @@ class HomeFragment : Fragment(), LocationListener {
 
                 var houre = binding.fajrTime.text.toString().substring(0,2).toInt()
                 var minute = binding.fajrTime.text.toString().substring(3,5).toInt()
-                val cal: Calendar = Calendar.getInstance()
-                cal[Calendar.HOUR_OF_DAY] = houre
-                cal[Calendar.MINUTE]      = minute
-                cal[Calendar.SECOND]      = 40
-                cal[Calendar.MILLISECOND] = 0
+
+                smplrAlarmUpdate(requireContext().applicationContext) {
+                    requestCode { 1810 }
+                    hour { houre }
+                    min { minute }
 
 
 
+                    weekdays {
+                        monday()
+                        friday()
+                        sunday()
+                        thursday()
+                        tuesday()
+                        wednesday()
+                        saturday()
 
+                    }
 
-                var intent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java)
-                var pendingIntent : PendingIntent= PendingIntent.getBroadcast(requireContext().applicationContext,
-                    110, intent,PendingIntent.FLAG_IMMUTABLE)
-                var am : AlarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                am.setRepeating(AlarmManager.RTC_WAKEUP, cal.timeInMillis ,AlarmManager.INTERVAL_DAY,  pendingIntent)
+                }
+
 
 
             }
@@ -642,18 +795,23 @@ class HomeFragment : Fragment(), LocationListener {
 
                 var houre = binding.asrTime.text.toString().substring(0,2).toInt() +12
                 var minute = binding.asrTime.text.toString().substring(3,5).toInt()
-                val cal: Calendar = Calendar.getInstance()
-                cal[Calendar.HOUR_OF_DAY] = houre
-                cal[Calendar.MINUTE]      = minute
-                cal[Calendar.SECOND]      = 0
-                cal[Calendar.MILLISECOND] = 0
+                smplrAlarmUpdate(requireContext().applicationContext) {
+                    requestCode { 1830 }
+                    hour { houre }
+                    min { minute }
 
-                var intent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java)
-                var pendingIntent : PendingIntent= PendingIntent.getBroadcast(requireContext().applicationContext,
-                    130, intent,PendingIntent.FLAG_IMMUTABLE)
-                var am : AlarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                am.setRepeating(AlarmManager.RTC_WAKEUP, cal.timeInMillis ,AlarmManager.INTERVAL_DAY,  pendingIntent)
+                    weekdays {
+                        monday()
+                        friday()
+                        sunday()
+                        thursday()
+                        tuesday()
+                        wednesday()
+                        saturday()
 
+                    }
+
+                }
 
 
             }
@@ -665,17 +823,23 @@ class HomeFragment : Fragment(), LocationListener {
                 editor.commit()
                 var houre = binding.dhuhrTime.text.toString().substring(0,2).toInt()
                 var minute = binding.dhuhrTime.text.toString().substring(3,5).toInt()
-                val cal: Calendar = Calendar.getInstance()
-                cal[Calendar.HOUR_OF_DAY] = houre
-                cal[Calendar.MINUTE]      = minute
-                cal[Calendar.SECOND]      = 0
-                cal[Calendar.MILLISECOND] = 0
+                smplrAlarmUpdate(requireContext().applicationContext) {
+                    requestCode { 1820 }
+                    hour { houre }
+                    min { minute }
 
-                var intent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java)
-                var pendingIntent : PendingIntent= PendingIntent.getBroadcast(requireContext().applicationContext,
-                    120, intent,PendingIntent.FLAG_IMMUTABLE)
-                var am : AlarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                am.setRepeating(AlarmManager.RTC_WAKEUP, cal.timeInMillis ,AlarmManager.INTERVAL_DAY,  pendingIntent)
+                    weekdays {
+                        monday()
+                        friday()
+                        sunday()
+                        thursday()
+                        tuesday()
+                        wednesday()
+                        saturday()
+
+                    }
+
+                }
 
             }
 
@@ -683,21 +847,24 @@ class HomeFragment : Fragment(), LocationListener {
             if (sharedPreference.getString("maghrib","") == "true"){
                 var houre = binding.maghribTime.text.toString().substring(0,2).toInt() +12
                 var minute = binding.maghribTime.text.toString().substring(3,5).toInt()
-                val cal: Calendar = Calendar.getInstance()
-                cal[Calendar.HOUR_OF_DAY] = houre
-                cal[Calendar.MINUTE]      = minute
-                cal[Calendar.SECOND]      = 0
-                cal[Calendar.MILLISECOND] = 0
 
+                smplrAlarmUpdate(requireContext().applicationContext) {
+                    requestCode { 1840 }
+                    hour { houre }
+                    min { minute }
 
+                    weekdays {
+                        monday()
+                        friday()
+                        sunday()
+                        thursday()
+                        tuesday()
+                        wednesday()
+                        saturday()
 
+                    }
 
-
-                var intent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java)
-                var pendingIntent : PendingIntent= PendingIntent.getBroadcast(requireContext().applicationContext,
-                    140, intent,PendingIntent.FLAG_IMMUTABLE)
-                var am : AlarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                am.setRepeating(AlarmManager.RTC_WAKEUP, cal.timeInMillis ,AlarmManager.INTERVAL_DAY,  pendingIntent)
+                }
 
 
             }
@@ -705,18 +872,26 @@ class HomeFragment : Fragment(), LocationListener {
             if (sharedPreference.getString("isha","") == "true"){
                 var houre = binding.ishaTime.text.toString().substring(0,2).toInt() +12
                 var minute = binding.ishaTime.text.toString().substring(3,5).toInt()
-                val cal: Calendar = Calendar.getInstance()
-                cal[Calendar.HOUR_OF_DAY] = houre
-                cal[Calendar.MINUTE]      = minute
-                cal[Calendar.SECOND]      = 0
-                cal[Calendar.MILLISECOND] = 0
+
+                smplrAlarmUpdate(requireContext().applicationContext) {
+                    requestCode { 1850 }
+                    hour { houre }
+                    min { minute }
+
+                    weekdays {
+                        monday()
+                        friday()
+                        sunday()
+                        thursday()
+                        tuesday()
+                        wednesday()
+                        saturday()
+
+                    }
+
+                }
 
 
-                var intent = Intent(requireContext().applicationContext, MyBroadcastReceiver::class.java)
-                var pendingIntent : PendingIntent= PendingIntent.getBroadcast(requireContext().applicationContext,
-                    150, intent,PendingIntent.FLAG_IMMUTABLE)
-                var am : AlarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                am.setRepeating(AlarmManager.RTC_WAKEUP, cal.timeInMillis ,AlarmManager.INTERVAL_DAY,  pendingIntent)
 
 
             }
