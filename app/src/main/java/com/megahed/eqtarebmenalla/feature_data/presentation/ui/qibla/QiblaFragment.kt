@@ -7,6 +7,7 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.location.LocationManager
 import android.os.Bundle
+import android.telephony.TelephonyManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -20,6 +21,8 @@ import androidx.lifecycle.Observer
 import com.megahed.eqtarebmenalla.R
 import com.megahed.eqtarebmenalla.databinding.FragmentQiblaBinding
 import com.megahed.eqtarebmenalla.feature_data.presentation.viewoModels.QiblaVM
+import org.json.JSONObject
+import java.io.IOException
 
 
 class QiblaFragment : Fragment(), SensorEventListener {
@@ -40,10 +43,22 @@ class QiblaFragment : Fragment(), SensorEventListener {
         binding = FragmentQiblaBinding.inflate(inflater, container, false)
         val root : View = binding.root
 
+        val tm = getSystemService(requireContext(), TelephonyManager::class.java) as TelephonyManager
+        val locale = tm.networkCountryIso
+
+        val jObj = JSONObject(getJsonDataFromAsset("location.json", requireContext()))
+        val jsonArry = jObj.getJSONArray("ref_country_codes")
+        for (i in 0 until jsonArry.length()) {
+            val user = HashMap<String, String?>()
+            val obj = jsonArry.getJSONObject(i)
+            if(obj.getString("alpha2").toString().lowercase() == locale){
+               altitude = obj.getString("latitude")
+                longitude = obj.getString("longitude")
+            }
+
+        }
 
         qiblaVM = QiblaVM()
-        getArguments()?.getString("altitude")?.let { altitude =it }
-        getArguments()?.getString("longitude")?.let {longitude = it }
 
         qiblaVM.getQibla(altitude, longitude).observe(viewLifecycleOwner, Observer {
             angl = it.data.direction.toInt()
@@ -91,6 +106,19 @@ class QiblaFragment : Fragment(), SensorEventListener {
         super.onPause()
         sensorManager.unregisterListener(this)
     }
+
+
+    fun getJsonDataFromAsset(fileName: String, context : Context): String? {
+        val jsonString: String
+        try {
+            jsonString = context.assets.open(fileName).bufferedReader().use { it.readText() }
+        } catch (ioException: IOException) {
+            ioException.printStackTrace()
+            return null
+        }
+        return jsonString
+    }
+
 
 
 
