@@ -1,6 +1,7 @@
 package com.megahed.eqtarebmenalla.adapter
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -8,6 +9,7 @@ import com.megahed.eqtarebmenalla.R
 import com.megahed.eqtarebmenalla.common.Constants
 import com.megahed.eqtarebmenalla.databinding.AyaItemBinding
 import com.megahed.eqtarebmenalla.db.model.Aya
+import com.megahed.eqtarebmenalla.feature_data.presentation.ui.tafsir.TafsirActivity
 import com.megahed.eqtarebmenalla.myListener.OnMyItemClickListener
 
 class AyaAdapter (private val context: Context,
@@ -61,6 +63,16 @@ class AyaAdapter (private val context: Context,
         holder.fav.setOnClickListener {//for favorite Item
             onMyItemClickListener.onItemClick(listData[position],it)
 
+        }
+
+        holder.itemView.setOnClickListener {
+            val intent = Intent(context, TafsirActivity::class.java)
+
+            intent.putExtra("sura", listData[position].numberInSurah.toString())
+            intent.putExtra("eyaId", (position+1).toString())
+            intent.putExtra("aya", listData[position].text)
+
+            context.startActivity(intent)
         }
 
 
