@@ -68,7 +68,7 @@ class AyaAdapter (private val context: Context,
         holder.itemView.setOnClickListener {
             val intent = Intent(context, TafsirActivity::class.java)
 
-            intent.putExtra("sura", listData[position].numberInSurah.toString())
+            intent.putExtra("sura", listData[position].soraId.toString())
             intent.putExtra("eyaId", (position+1).toString())
             intent.putExtra("aya", listData[position].text)
 
