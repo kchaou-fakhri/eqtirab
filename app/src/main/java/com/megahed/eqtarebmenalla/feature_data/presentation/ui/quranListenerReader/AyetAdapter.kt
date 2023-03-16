@@ -22,10 +22,6 @@ class AyetAdapter(
             view.findViewById<TextView>(R.id.aya_id).text = convertNumberToArabicNB(eya.id.toString())
             view.findViewById<TextView>(R.id.aya).text = eya.eya
 
-
-
-
-
         }
     }
 
