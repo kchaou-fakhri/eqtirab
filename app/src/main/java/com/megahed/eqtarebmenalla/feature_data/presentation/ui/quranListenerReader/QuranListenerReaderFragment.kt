@@ -233,4 +233,6 @@ class QuranListenerReaderFragment : Fragment() , MenuProvider {
     }
 
 
+
+
 }
