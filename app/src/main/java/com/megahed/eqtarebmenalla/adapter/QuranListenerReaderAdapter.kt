@@ -139,7 +139,7 @@ class QuranListenerReaderAdapter (private val context: Context,
 
             var nameSuah =Constants.SORA_OF_QURAN.get(surahId.toInt() )
         val request = DownloadManager.Request(uri)
-        request.setTitle(nameSuah)
+        request.setTitle("$nameSuah:$qar2eId-$surahId.mp3")
         request.setDescription("Downloading")
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
             request.allowScanningByMediaScanner();
